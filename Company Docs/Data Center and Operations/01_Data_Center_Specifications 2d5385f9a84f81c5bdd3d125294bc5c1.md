@@ -1,0 +1,74 @@
+# 01_Data_Center_Specifications
+
+# Data Center
+
+FarmGPU's data center infrastructure is primarily hosted at a tier 3 datacenter in Rancho Cordova, CA called Conscious Capital Data Center. We meet our most stringent partner requirements for 99.99% availability, ensuring enterprise-grade reliability, security, and performance for AI workloads.
+
+# Power Infrastructure
+
+- Dual independent utility feeds from separate substations, each capable of supporting 100% of data center load
+- N+1 redundant UPS systems with minimum 15-minute runtime at full load
+- N+1 redundant generator systems with 48-hour on-site fuel storage
+- 2N redundant power distribution paths from utility to rack level
+- Remote power monitoring and management at rack level
+- Monthly generator load testing and quarterly full-load system tests
+- 24/7 on-site facilities team for immediate response
+
+# Network Architecture
+
+- Minimum 100 Gbps total bandwidth capacity
+- Dual diverse internet circuits from separate providers with BGP routing
+- Redundant core switches in high-availability configuration
+- DDoS protection solutions
+- Performance guarantees:
+    - Sub-80% network utilization during peak hours
+    - <0.1% packet loss
+    - P95 round-trip time under 4ms within data center
+    - P95 jitter under 3ms within data center
+
+# Security and Compliance
+
+- ISO 27001 certified data center
+- 24/7 on-site security personnel
+- Isolated secure racks with restricted access
+- Comprehensive access logging and monitoring
+- Regular security audits and compliance reviews
+- Tier III+ data center standards compliance
+
+# Environmental Controls
+
+- Advanced liquid cooling systems for optimal GPU performance
+- N+1 redundancy for cooling infrastructure
+- Real-time environmental monitoring and alerts
+- Regular thermal imaging and preventive maintenance
+
+FarmGPU is compliant with the RunPod secure cloud data center and network specifications below
+
+https://docs.runpod.io/hosting/partner-requirements#3-data-center-power-requirements
+
+## **3. Data Center Power Requirements**
+
+| **Requirement** | **Specification** |
+| --- | --- |
+| Utility Feeds | - Minimum of two independent utility feeds from separate substations- Each feed capable of supporting 100% of the data center’s power load- Automatic transfer switches (ATS) for seamless switchover between feeds with UL 1008 certification (or regional equivalent) |
+| UPS | - N+1 redundancy for UPS systems- Minimum of 15 minutes runtime at full load |
+| Generators | - N+1 redundancy for generator systems- Generators must be able to support 100% of the data center’s power load- Minimum of 48 hours of on-site fuel storage at full load- Automatic transfer to generator power within 10 seconds of utility failure |
+| Power Distribution | - Redundant power distribution paths (2N) from utility to rack level- Redundant Power Distribution Units (PDUs) in each rack- Remote power monitoring and management capabilities at rack level |
+| Testing and Maintenance | - Monthly generator tests under load for a minimum of 30 minutes- Quarterly full-load tests of the entire backup power system, including UPS and generators- Annual full-facility power outage test (coordinated with Runpod)- Regular thermographic scanning of electrical systems- Detailed maintenance logs for all power equipment- 24/7 on-site facilities team for immediate response to power issues |
+| Monitoring and Alerting | - Real-time monitoring of all power systems- Automated alerting for any power anomalies or threshold breaches |
+| Capacity Planning | - Maintain a minimum of 20% spare power capacity for future growth- Annual power capacity audits and forecasting |
+| Fire Suppression | - Maintain datacenter fire suppression systems in compliance with NFPA 75 and 76 (or regional equivalent) |
+
+## **4. Network Requirements**
+
+| **Requirement** | **Specification** |
+| --- | --- |
+| Internet Connectivity | - Minimum of two diverse and redundant internet circuits from separate providers- Each connection should be capable of supporting 100% of the data center’s bandwidth requirements- BGP routing implemented for automatic failover between circuit providers- 100 Gbps minimum total bandwidth capacity |
+| Speed Requirements | - Preferred: >= 10 Gbps sustained upload/download speed per server- Minimum: >= 5 Gbps sustained upload/download speed per server- Speed measurements should be based on sustained throughput over a 60 second interval during a typical workload |
+| Core Infrastructure | - Redundant core switches in a high-availability configuration (e.g., stacking, VSS, or equivalent) |
+| Distribution Layer | - Redundant distribution switches with multi-chassis link aggregation (MLAG) or equivalent technology- Minimum 100 Gbps uplinks to core switches |
+| Access Layer | - Redundant top-of-rack switches in each cabinet- Minimum 100 Gbps server connections for high-performance compute nodes |
+| DDoS Protection | - Must have a DDoS mitigation solution, either on-premises or on-demand cloud-based |
+| Quality of service | Maintain network performance within the following parameters:* Network utilization levels must remain below 80% on any link during peak hours* Packet loss must not exceed 0.1% (1 in 1000) on any network segment* P95 round-trip time (RTT) within the data center should not exceed 4ms* P95 jitter within the datacenter should not exceed 3ms |
+| Testing and Maintenance | - Regular failover testing of all redundant components (minimum semi-annually)- Annual full-scale disaster recovery test- Maintenance windows for network updates and patches, with minimal service disruption scheduled at least 1 week in advance |
+| Capacity Planning | - Maintain a minimum of 40% spare network capacity for future growth- Regular network performance audits and capacity forecasting |

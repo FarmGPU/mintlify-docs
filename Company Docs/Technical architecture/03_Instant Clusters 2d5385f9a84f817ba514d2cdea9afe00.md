@@ -1,0 +1,72 @@
+# 03_Instant Clusters
+
+## 3.3 Instant Clusters — On-Demand Multi-Node AI Compute
+
+FarmGPU offers **Instant Clusters** — high-performance, multi-node GPU clusters that users can provision in **minutes, not months**, via a self-serve, on-demand experience in partnership with RunPod. These clusters bring **bare-metal performance to cloud-like flexibility**, eliminating the traditional barriers of hardware procurement, rack build-out, and operational complexity. 
+
+[FarmGPU Blog](https://blog.farmgpu.com/b200-cluster/?utm_source=chatgpt.com)
+
+### Key Characteristics
+
+**One-Click Multi-Node Deployment**
+
+Users can launch powerful multi-node clusters from the RunPod dashboard with a few clicks. Instant Clusters support bring-your-own Docker containers or optimized templates for training, inference, and research workflows.
+
+**Pay-Per-Use Economics**
+
+Billing is per-second, not per-month, giving teams the flexibility to:
+
+- Run experiments without upfront commitments
+- Scale up for training runs and tear down when finished
+- Avoid minimum runtime requirements or termination fees
+
+**Complete Control**
+
+Users retain full control of their cluster lifecycle — start, stop, and reconfigure as needed — without long-term lock-in or opaque pricing structures.
+
+---
+
+### Architecture & Performance Optimizations
+
+Instant Clusters are built on the same high-performance infrastructure that powers FarmGPU’s bare-metal offerings, including:
+
+**400 GB/s between nodes with RDMA Networking Fabric**
+
+Clusters leverage an OCP-compliant 800 Gbps backend fabric for GPU-to-GPU communication, delivering low-latency, high-bandwidth interconnects optimized for distributed training and collective operations.
+
+**Solidigm PCIe 5.0 NVMe Local Storage**
+
+Each node includes eight PCIe 5.0 NVMe SSDs, providing up to 116 GB/s of local storage throughput to ensure that model loading and data pipelines do not bottleneck training runs. [FarmGPU Blog](https://blog.farmgpu.com/b200-cluster/?utm_source=chatgpt.com)
+
+**Topology-Aware Communication**
+
+Clusters are optimized for high NCCL performance — the communications library that defines training throughput for large models — achieving multi-hundreds-GB/s AllReduce performance across GPU nodes.
+
+---
+
+### Typical Use Cases
+
+Instant Clusters are ideal for teams that need **elastic scale with the performance profile of bare-metal systems**, including:
+
+- **Distributed model training**, especially with PyTorch DDP, DeepSpeed, and other frameworks
+- **Large-scale fine-tuning and experimentation**
+- **High-performance inference workloads**
+- **Burst compute capacity without long-term commitments**
+
+This capability gives FarmGPU customers a flexible on-ramp to **production-grade AI compute** without the overhead of provisioning and managing their own cluster hardware.
+
+---
+
+### How Instant Clusters Fit the FarmGPU Platform
+
+Instant Clusters unify the **best aspects of cloud and bare metal**:
+
+- **Cloud-like experience:** Self-service deployment, per-second billing, fast iteration
+- **Bare-metal performance:** Optimized interconnects, local NVMe, and hardware-aware tuning
+- **Integration with your software stack:** Works seamlessly with FarmGPU’s control plane, scheduling, and observability tools
+
+This makes them a natural complement to both the **on-demand GPU Cloud** and **managed infrastructure offerings**, enabling:
+
+- Rapid experimentation before committing to dedicated clusters
+- Burst capacity beyond long-term rentals
+- A consistent interface for both transient and persistent compute

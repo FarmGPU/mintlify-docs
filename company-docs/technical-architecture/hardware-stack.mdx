@@ -1,0 +1,156 @@
+---
+title: "Hardware Stack"
+description: "FarmGPU GPU, CPU, storage fabric, and networking infrastructure"
+icon: "microchip"
+---
+
+## Hardware Stack
+
+FarmGPU's infrastructure is designed as a **cohesive system**, optimized for AI workloads from silicon through storage and networking. We prioritize **performance, efficiency, and forward compatibility**, enabling us to deploy the latest hardware while maintaining operational stability.
+
+## GPUs: High-Performance AI Compute
+
+FarmGPU supports a broad range of modern NVIDIA GPUs to address both frontier and applied AI workloads.
+
+### Supported GPU Platforms
+
+- **NVIDIA H100**
+- **NVIDIA H200**
+- **NVIDIA B200 (Blackwell)**
+- **NVIDIA RTX Pro 6000 Blackwell**
+
+This range allows us to support:
+
+- Large-scale model training
+- High-throughput inference
+- Fine-tuning and experimentation
+- Enterprise and workstation-class AI workloads
+
+Our GPU nodes are configured for **maximum utilization and predictable performance**, with platform designs aligned to real-world AI workload characteristics rather than generic cloud abstractions.
+
+## CPUs: Balanced Host Compute
+
+FarmGPU pairs GPUs with modern, high-performance CPU platforms to ensure that host-side compute never becomes a bottleneck.
+
+### Supported CPU Platforms
+
+- **AMD Turin**
+- **Intel Granite Rapids**
+
+These CPUs provide:
+
+- High core counts and memory bandwidth
+- Strong PCIe 5.0 connectivity
+- Balanced performance for data preparation, orchestration, and I/O-heavy tasks
+
+By supporting both AMD and Intel platforms, FarmGPU maintains flexibility across supply chains and customer requirements.
+
+## Storage Fabric: AI-Optimized by Design
+
+FarmGPU treats storage as a **core system component**, not a peripheral service. Our storage architecture is designed to deliver **predictable, high-throughput data paths** that keep GPUs fed under real AI workloads.
+
+### Storage Software Platforms
+
+We deploy and operate leading, production-grade storage platforms, including:
+
+- **MinIO**
+- **VAST Data**
+- **Weka**
+- **Ceph**
+
+All storage platforms are **benchmarked and validated** using FarmGPU's internal **Silo** benchmarking and evaluation suite to ensure consistent performance across training and inference workloads.
+
+### Storage Hardware
+
+- **Solidigm SSDs across all platforms**
+- **PCIe 5.0 NVMe SSDs** in all GPU compute nodes
+- **High-density 122TB QLC SSDs** in storage nodes for cost-efficient scaling
+
+This combination enables both **high-performance hot data paths** and **economical cold and capacity tiers**, optimized for AI dataset growth.
+
+### DPU-Accelerated Data Path (NVIDIA BlueField-3)
+
+A key differentiator in FarmGPU's storage architecture is the use of **NVIDIA BlueField-3 DPUs**.
+
+BlueField-3 DPUs offload critical infrastructure functions from the host CPU, including:
+
+- Storage protocol processing
+- Network virtualization
+- Encryption and security
+- Data movement orchestration
+
+By offloading these tasks, FarmGPU enables:
+
+- **GPU Direct Storage (GDS)** with near bare-metal throughput
+- Reduced CPU contention on GPU nodes
+- More predictable latency under load
+- Higher effective GPU utilization (MFU)
+
+In AI systems, performance is determined by the **end-to-end data path**. DPUs allow FarmGPU to optimize that path holistically, rather than relying on CPU-bound software layers.
+
+---
+
+## Networking: High-Bandwidth, Low-Latency Fabrics
+
+FarmGPU deploys a **dual-fabric networking architecture** to separate customer-facing traffic from backend AI communication.
+
+### Front-End Network
+
+- **NVIDIA SN5600**
+
+Optimized for:
+
+- North–south traffic
+- Customer access
+- Control plane and service connectivity
+
+### Back-End AI Fabric
+
+- **Celestica DS5000**
+- **Broadcom Tomahawk 5 ASIC**
+
+Optimized for:
+
+- East–west GPU communication
+- Storage traffic
+- Collective operations (e.g., NCCL)
+
+### Fabric Management
+
+- **Hedgehog Open Network Fabric**
+
+Provides:
+
+- Open, vendor-neutral fabric management
+- Automated provisioning and monitoring
+- High observability and control
+
+### RDMA Support
+
+- **RDMA over Converged Ethernet (RoCE)**
+- Tuned with **Rocky v2**
+
+This networking architecture ensures:
+
+- Predictable latency
+- High throughput at scale
+- Efficient GPU-to-GPU and GPU-to-storage communication
+
+## Cooling: Today and Tomorrow
+
+### Current Deployment
+
+- Air-cooled GPU servers deployed in existing and legacy data centers
+- Optimized airflow and rack density based on GPU thermal profiles
+
+### Future Roadmap
+
+- Partnerships with **two major immersion cooling providers**
+- Initial immersion deployments planned for **2026**
+- Designed to support:
+    - Higher rack densities
+    - Improved power efficiency
+    - Next-generation GPU thermal envelopes
+
+This phased approach allows FarmGPU to scale efficiently today while preparing for the thermal and power demands of future AI hardware.
+

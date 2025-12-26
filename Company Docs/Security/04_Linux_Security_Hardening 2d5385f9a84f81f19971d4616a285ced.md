@@ -1,0 +1,75 @@
+# 04_Linux_Security_Hardening
+
+# 4.4 Linux & OS Security (TractorOS)
+
+FarmGPU’s operating system, **TractorOS**, is built on established Linux security best practices and extended with targeted hardening techniques designed for AI infrastructure. The goal is to **reduce attack surface, enforce consistency, and limit blast radius**, while preserving performance for GPU- and storage-intensive workloads.
+
+---
+
+## 4.4.1 Secure OS Baseline & Attack Surface Reduction
+
+TractorOS follows a **minimal, hardened Linux baseline** designed to reduce unnecessary exposure.
+
+Key practices include:
+
+- Minimal OS footprint with only required services enabled
+- Removal of unused packages, daemons, and subsystems
+- No interactive user accounts on production nodes
+- Controlled administrative access via centralized tooling only
+
+These practices reduce the number of reachable services and limit opportunities for lateral movement or privilege escalation.
+
+---
+
+## 4.4.2 Kernel & Runtime Hardening
+
+The Linux kernel and runtime configuration are hardened using widely adopted security controls.
+
+Key measures:
+
+- Conservative kernel configuration aligned with security best practices
+- Signed kernel modules and restricted module loading
+- Hardened sysctl settings (memory protection, process isolation, ptrace restrictions)
+- Enforced memory protections (ASLR, NX, KPTI where applicable)
+
+Security settings are evaluated alongside performance requirements to avoid negatively impacting GPU or storage throughput.
+
+---
+
+## 4.4.3 Storage & Device Security
+
+TractorOS treats storage and hardware devices as **security-sensitive resources**, not just performance components.
+
+Controls include:
+
+- Enforced device isolation for GPUs, NVMe, and NICs
+- No direct access to raw block devices by tenant workloads
+- Hardware-backed encryption at rest (SEDs) enabled by default
+- Secure device lifecycle handling, including cryptographic erase before reuse
+
+These measures help ensure that data remains protected even in multi-tenant and hardware-reuse scenarios.
+
+---
+
+## 4.4.4 TractorOS-Specific Hardening Techniques
+
+In addition to standard Linux practices, TractorOS incorporates several platform-specific controls:
+
+- **Immutable OS images:**
+    
+    The base OS is read-only and updated atomically, preventing configuration drift and persistent compromise.
+    
+- **Deterministic provisioning:**
+    
+    Nodes are provisioned from known-good images with repeatable configuration.
+    
+- **Explicit trust boundaries:**
+    
+    Clear separation between the host OS, management services, and customer workloads.
+    
+- **Observable state:**
+    
+    OS state and system events are continuously monitored and logged for audit and incident response.
+    
+
+These techniques enable FarmGPU to maintain **consistent security posture across fleets**, while supporting rapid recovery and rollback if issues arise.

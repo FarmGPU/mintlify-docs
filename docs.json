@@ -1,68 +1,62 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "FarmGPU",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#88ff00",
+    "light": "#a0ff33",
+    "dark": "#529900"
   },
   "favicon": "/favicon.svg",
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Company",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Overview",
             "pages": [
               "index",
-              "quickstart",
-              "development"
+              "company-docs/company-overview/company-snapshot",
+              "company-docs/company-overview/mission-vision-positioning",
+              "company-docs/company-overview/founders-thesis"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Products & Services",
+            "pages": []
+          },
+          {
+            "group": "Data Center & Operations",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "company-docs/data-center-operations/data-center-specifications",
+              "company-docs/data-center-operations/monitoring-reliability",
+              "company-docs/data-center-operations/service-level-agreements",
+              "company-docs/data-center-operations/user-agreements-policies"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Security",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "company-docs/security/compliance-standards",
+              "company-docs/security/storage-security",
+              "company-docs/security/confidential-computing",
+              "company-docs/security/linux-security-hardening"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Team & Culture",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API reference",
-        "groups": [
-          {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
+              "company-docs/team-culture/team-structure",
+              "company-docs/team-culture/culture"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Technical Architecture",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "company-docs/technical-architecture/hardware-stack",
+              "company-docs/technical-architecture/software-stack",
+              "company-docs/technical-architecture/instant-clusters"
             ]
           }
         ]
@@ -72,33 +66,29 @@
       "anchors": [
         {
           "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
+          "href": "/",
           "icon": "book-open-cover"
         },
         {
           "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
+          "href": "https://blog.farmgpu.com",
           "icon": "newspaper"
+        },
+        {
+          "anchor": "Calculator",
+          "href": "https://calculator.farmgpu.net/",
+          "icon": "calculator"
         }
       ]
     }
   },
   "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
+    "light": "/logo/FarmGPU_Black_Full.svg",
+    "dark": "/logo/FarmGPU_White_Full.svg",
+    "href": "/"
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
+    "links": []
   },
   "contextual": {
     "options": [

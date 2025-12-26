@@ -1,0 +1,110 @@
+---
+title: "Confidential Computing"
+description: "FarmGPU's confidential AI stack with hardware-backed isolation"
+icon: "lock-keyhole"
+---
+
+# Confidential Computing
+
+FarmGPU is **among the first NeoCloud providers** to deliver a full **Confidential AI** stack that spans **CPU + GPU**, enabling customers to run sensitive workloads with **hardware-backed isolation** and **cryptographic proof** of platform integrity.
+
+Confidential Computing moves security beyond "data at rest" and "data in transit" to **data in use**—protecting models, prompts, weights, and sensitive datasets even while being processed. This matters because modern AI workloads often contain high-value IP (model weights, fine-tuning data, inference prompts) and regulated data (PHI, PII, financial records) that cannot be safely exposed to platform operators or other tenants.
+
+Our confidential computing architecture is built on:
+
+- **Intel® Xeon® (Granite Rapids) + Intel® Trust Domain Extensions (TDX)** for CPU-side trusted execution (confidential VMs)
+- **NVIDIA Blackwell (B200) Confidential Computing** capabilities for GPU-side secure execution and encrypted high-performance multi-GPU configurations
+- **Remote Attestation** workflows so customers can verify trust *before* deploying sensitive artifacts
+
+## What "Confidential AI" Means at FarmGPU
+
+Confidential AI at FarmGPU is a **system-level trust boundary** designed to protect against:
+
+- Cloud operator / hypervisor visibility into tenant workloads
+- Host OS tampering
+- Firmware rollback and "known vulnerable" platform states
+
+This is achieved by running workloads in a **Confidential Virtual Machine (CVM)** backed by Intel TDX and attaching GPUs operating in confidential-capable modes where the platform can enforce isolation and supply attestation evidence.
+
+## The Trusted Execution Environment: CPU + GPU as One Stack
+
+### Intel® TDX on Granite Rapids: Hardware-Enforced VM Isolation
+
+Intel TDX is designed to protect a tenant VM (a "Trust Domain") from a malicious or compromised host/hypervisor by providing **hardware-level isolation** and **memory encryption**, plus integrity protections and attestation.
+
+Key properties FarmGPU relies on:
+
+- **Confidentiality (Memory Encryption):** TD memory is encrypted so it is opaque to cloud operators and the host stack.
+- **Integrity:** Architectural mechanisms protect the TD's CPU state and memory mappings against tampering.
+- **Attestation:** Workload owners can verify platform configuration and policy before releasing secrets to the VM.
+
+This gives you a CPU-side "black box" environment where **even privileged host software cannot directly read or modify tenant memory**.
+
+### NVIDIA Blackwell (B200): GPU Confidential Computing & Secure Multi-GPU
+
+NVIDIA's confidential computing capabilities for Hopper/Blackwell are designed to protect GPU workloads in a confidential VM context, including mitigations for software attacks, rollback, and certain physical snooping scenarios.
+
+A major advantage of Blackwell in multi-GPU systems is support for **encrypted NVLink pathways** in multi-GPU pass-through mode—meaning you can attach up to **eight GPUs** to a single confidential VM while keeping GPU-to-GPU traffic encrypted within the node.
+
+FarmGPU's Blackwell confidential configuration emphasizes:
+
+- **GPU passthrough to a CVM:** GPUs are assigned exclusively to a tenant VM (not shared across VMs in passthrough mode).
+- **Encrypted NVLink in Blackwell multi-GPU passthrough:** Encrypted GPU-to-GPU communication helps protect collective training traffic and intermediate tensors at high bandwidth.
+- **CPU ↔ GPU data protection options:** NVIDIA describes CPU-GPU traffic encryption approaches including software encryption via bounce buffers, and in some configurations using standards-based link protection (e.g., IDE/TDISP) when supported across CPU/GPU/firmware/driver stack.
+
+## Remote Attestation: "Trust, but Verify" Before You Upload Secrets
+
+Security isn't just isolation—it's **proof**.
+
+FarmGPU supports remote attestation so customers can validate:
+
+- The node is genuine hardware
+- Firmware/driver stack is authentic and not rolled back
+- Confidential modes and policies are enabled as expected
+
+### NVIDIA Attestation Suite
+
+NVIDIA provides an attestation framework intended to cryptographically verify the authenticity and integrity of NVIDIA hardware and firmware, integrating with confidential computing workflows. The suite includes **NRAS**, **RIM Service**, and **OCSP Service**.
+
+This lets a verifier validate "claims" about the GPU platform state prior to allowing sensitive workloads to proceed.
+
+### Composite Attestation: CPU TEE + GPU TEE
+
+Intel's Trust Authority documentation describes composite attestation workflows where **Intel TDX evidence** and **NVIDIA GPU evidence** are collected and verified together, and GPU verification can be routed through NVIDIA's attestation service.
+
+Why composite matters: it ties together the CPU-side trusted VM environment and the GPU-side trusted execution claims into **one verifiable chain of trust**, which is stronger than "GPU-only" evidence.
+
+## How Customers Use Confidential AI on FarmGPU
+
+A typical workflow looks like:
+
+1. **Provision a confidential VM-enabled node or cluster**
+2. **Request attestation evidence** (CPU + GPU where applicable)
+3. **Verify evidence** against expected policies (firmware versions, modes enabled, no rollback)
+4. **Release secrets only after verification**
+
+    (model weights, encryption keys, regulated datasets, API credentials)
+
+5. Run training / fine-tuning / inference with reduced trust assumptions about the cloud operator
+
+This model supports security-sensitive deployments where "trusting the provider" is not acceptable.
+
+## Threat Model Clarity: What We Protect Against
+
+FarmGPU's confidential stack is designed to mitigate major classes of attacks in NVIDIA's CC threat framing (e.g., software attacks, rollback attacks, certain physical snooping). [NVIDIA Docs](https://docs.nvidia.com/nvidia-secure-ai-with-blackwell-and-hopper-gpus-whitepaper.pdf)
+
+As with all TEEs, some categories (e.g., sophisticated physical attacks, denial of service) are typically considered out of scope at the silicon level and must be managed via layered controls and operational practices. [NVIDIA Docs](https://docs.nvidia.com/nvidia-secure-ai-with-blackwell-and-hopper-gpus-whitepaper.pdf)
+
+We are explicit about scope during enterprise security review.
+
+## High-Value Use Cases
+
+Confidential AI unlocks new classes of workloads:
+
+- **Healthcare & Life Sciences:** train/fine-tune on sensitive patient or genomic data while reducing exposure risk
+- **Financial Services:** fraud detection, trading signals, and risk models on sensitive transaction streams
+- **Sovereign AI & Regulated Environments:** strong isolation for national labs, defense-adjacent research, and data residency-driven deployments
+- **Model IP Protection:** protect high-value proprietary weights and inference prompts from infrastructure operators and third parties
+
+In short: **run frontier-grade AI on sensitive data with hardware-backed proof of isolation**—not contractual promises.
+

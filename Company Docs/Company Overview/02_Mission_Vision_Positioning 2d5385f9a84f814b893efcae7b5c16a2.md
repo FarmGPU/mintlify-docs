@@ -1,0 +1,102 @@
+# 02_Mission_Vision_Positioning
+
+# 1.2 Mission, Vision, and Positioning
+
+## Mission
+
+FarmGPU empowers the AI revolution by delivering **secure, high-performance, and cost-efficient GPU infrastructure** purpose-built for modern AI workloads.
+
+We provide on-demand and dedicated GPU servers through **secure, local data centers**, and we partner deeply across hardware, platform software, and emerging technologies to build a **scalable NeoCloud ecosystem**. Our mission is to **decentralize and democratize AI infrastructure**, giving builders real alternatives to hyperscalers—without sacrificing performance, security, or control.
+
+---
+
+## Vision
+
+We envision a world where **open and sovereign AI wins**.
+
+In this future:
+
+- AI infrastructure is **local, auditable, and secure by default**
+- Builders retain **full control over their data, models, and economics**
+- Open standards and open ecosystems outpace closed hyperscaler platforms
+- Specialized NeoClouds compete head-to-head with hyperscalers on performance, cost, and reliability
+
+FarmGPU’s long-term vision is to be a **foundational NeoCloud provider**—powering AI innovation globally while remaining capital-efficient, standards-driven, and aligned with the communities that build AI, not monopolize it.
+
+## Category Definition: The NeoCloud
+
+> NeoCloud: A specialized cloud provider purpose-built for AI workloads
+> 
+
+Unlike hyperscalers, NeoClouds:
+
+- Are **GPU-first**, not CPU-centric
+- Optimize for **real AI workloads**, not generic VMs
+- Deliver **dramatically better price-performance**
+
+# Strategic Positioning
+
+## High Performance, Low Cost
+
+FarmGPU delivers **up to 70% lower total cost of ownership (TCO)** compared to major hyperscalers, without compromising performance or reliability.
+
+We achieve this through:
+
+- Optimized BOMs tuned for AI workloads
+- Lean team leveraging AI for everything
+- Deep hardware–software co-optimization
+- Transparent pricing aligned to actual infrastructure costs
+
+Rather than monetizing lock-in or proprietary services, FarmGPU aligns incentives with customers: **better utilization, better performance, lower cost**.
+
+---
+
+## 3.2 NeoCloud for Real-World AI: Storage as a First-Class Citizen
+
+AI workloads are **not compute-only**. Training, fine-tuning, and inference at scale demand **fast, reliable, and predictable storage**—something most NeoClouds and bare-metal GPU providers underinvest in.
+
+FarmGPU is uniquely positioned as a **storage-centric NeoCloud**.
+
+We differentiate by:
+
+- Designing storage as a **core architectural pillar**, not an afterthought
+- Partnering with industry leaders like **Solidigm** and major storage ISVs
+- Deploying **custom storage servers** tuned for AI workloads
+- Leveraging **DPU-accelerated architectures (NVIDIA BlueField-3)** to offload storage, networking, and security from CPUs
+- Supporting **AI-native storage patterns**, including:
+    - KV-cache offload for inference
+    - Vector databases
+    - High-throughput block, file, and object storage
+
+This approach enables FarmGPU to deliver **predictable performance at scale**—from small research clusters to enterprise and production AI systems.
+
+---
+
+## 3.3 The Trust Layer
+
+Trust is foundational to AI infrastructure. FarmGPU is building a **defense-in-depth trust layer** that spans hardware, software, and operations.
+
+### Security & Compliance
+
+- **SOC 2 Type II** (in progress)
+- Zero-trust networking model
+- Hardware-enforced isolation using DPUs
+- Secure lifecycle management of storage and compute assets
+
+### Confidential Computing
+
+FarmGPU is one of the few NeoClouds investing early in **end-to-end confidential computing** for GPUs:
+
+- Intel **TDX** support with NVIDIA B200
+- Secure enclaves for sensitive AI workloads
+- AMD **SEV** support planned for **Q2 2026**
+- Architecture designed to protect data **in use**, not just at rest or in transit
+
+### Why This Matters
+
+This trust layer enables:
+
+- Regulated and sensitive workloads (enterprise, government, research)
+- Model protection and IP isolation
+- Verifiable data handling and sanitization
+- Long-term customer confidence as AI regulation increases

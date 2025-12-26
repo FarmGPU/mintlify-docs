@@ -1,0 +1,25 @@
+# 01_Company_Snapshot
+
+# 1.1 Company Snapshot
+
+| Category | Detail |
+| --- | --- |
+| **Legal Entity Name** | FarmGPU, Inc. |
+| **Trade Name** | **FarmGPU** |
+| **Founded** | 2024 |
+| **HQ & Primary Ops** | 10850 Gold Center Dr ste 251, Rancho Cordova, CA 95670 |
+| Data Centers | Conscious Data Center 3141 Data Drive Rancho Cordova, CA 95670
+Evocative Data Centers Santa Clara Facility |
+| **Ownership** | Private (Founder-led) |
+| **Employee Count** | ~12 (FTE + Strategic Contractors) |
+
+## Core Business Description
+
+FarmGPU is redefining the future of GPU-powered cloud computing by offering cost-effective, scalable, and high-performance GPU resources tailored specifically for AI developers, innovative startups, and enterprises worldwide. The FarmGPU Cloud Platform that consists of
+
+## Core Offerings
+
+1. **On-demand compute:** Pay as you go instances for the latest NVIDIA GPUs, including H200, B200, and RTX Pro 6000 Blackwell.
+2. **Managed GPU Clusters:** Slurm/Kubernetes clusters for large-scale training with high performance RDMA Ethernet fabric
+3. Turnkey GPU Investment: Bring your own capex, have FarmGPU manage end to end, from planning, data center, networking, deployment and automation, to monetiziation on our partner platforms
+4. **AI Data Center Blueprint:** Transformation services for traditional facility operators, includes data center capacity planning, site assessment, and strategic deployment options for air, liquid, and immersion GPU servers.

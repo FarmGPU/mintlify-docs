@@ -1,0 +1,57 @@
+# 01_Compliance_and_Standards
+
+# 4.1 Compliance and Standards
+
+FarmGPU’s security posture is built on **alignment with established standards**, clear separation of responsibilities, and a roadmap toward formal certifications as the company scales. We prioritize **practical security controls, auditability, and transparency** over checkbox compliance.
+
+---
+
+## 4.1.1 Compliance Philosophy
+
+FarmGPU follows a **shared responsibility model**:
+
+- **FarmGPU** is responsible for the security of the platform, management plane, and operational processes.
+- **Data center partners** are responsible for physical security, facility controls, and environmental resilience.
+- **Customers** retain control over their workloads, data, and application-level security.
+
+This model aligns with industry best practices for infrastructure providers and enables enterprise customers to clearly map controls to risk ownership.
+
+---
+
+## 4.1.2 Core Security Certifications & Alignment
+
+### SOC 2 Type II (In Progress)
+
+FarmGPU is currently in the audit window for **SOC 2 Type II**, covering the following Trust Service Criteria:
+
+- **Security**
+- **Availability**
+- **Confidentiality**
+
+**Status:** In progress
+
+**Target completion:** **Q2 2026**
+
+### ISO/IEC 27001 (Data Center Alignment)
+
+FarmGPU operates within data centers that are **ISO/IEC 27001 certified** or aligned, ensuring that physical facilities adhere to globally recognized Information Security Management System (ISMS) standards.
+
+This includes:
+
+- Controlled physical access
+- Documented security procedures
+- Formal risk management and incident handling processes
+
+FarmGPU leverages these certified environments as part of its overall security posture, while maintaining separate logical and operational controls at the platform level.
+
+### Tier III+ Data Center Standards
+
+FarmGPU deploys infrastructure in **Tier III or Tier III+ data centers**, providing:
+
+- N+1 or 2N redundancy across power, cooling, and network paths
+- Concurrent maintainability
+- High availability suitable for production AI workloads
+
+**Facility availability target:** 99.99%
+
+These standards ensure infrastructure reliability while reducing correlated failure risk across clusters.
