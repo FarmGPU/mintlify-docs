@@ -9,6 +9,25 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Documentation",
+          "icon": "book-open-cover",
+          "href": "/"
+        },
+        {
+          "anchor": "Blog",
+          "icon": "newspaper",
+          "href": "https://blog.farmgpu.com"
+        },
+        {
+          "anchor": "Calculator",
+          "icon": "calculator",
+          "href": "https://calculator.farmgpu.net/"
+        }
+      ]
+    },
     "tabs": [
       {
         "tab": "Company",
@@ -24,7 +43,17 @@
           },
           {
             "group": "Products & Services",
-            "pages": []
+            "pages": [
+              "company/products-and-services/products"
+            ]
+          },
+          {
+            "group": "Technical Architecture",
+            "pages": [
+              "company-docs/technical-architecture/hardware-stack",
+              "company-docs/technical-architecture/software-stack",
+              "company-docs/technical-architecture/instant-clusters"
+            ]
           },
           {
             "group": "Data Center & Operations",
@@ -50,37 +79,10 @@
               "company-docs/team-culture/team-structure",
               "company-docs/team-culture/culture"
             ]
-          },
-          {
-            "group": "Technical Architecture",
-            "pages": [
-              "company-docs/technical-architecture/hardware-stack",
-              "company-docs/technical-architecture/software-stack",
-              "company-docs/technical-architecture/instant-clusters"
-            ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "/",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://blog.farmgpu.com",
-          "icon": "newspaper"
-        },
-        {
-          "anchor": "Calculator",
-          "href": "https://calculator.farmgpu.net/",
-          "icon": "calculator"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
     "light": "/logo/FarmGPU_Black_Full.svg",
