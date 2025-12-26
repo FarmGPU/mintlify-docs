@@ -7,7 +7,10 @@
     "light": "#a0ff33",
     "dark": "#529900"
   },
-  "favicon": "/favicon.svg",
+  "favicon": {
+    "light": "/logo/fgpu_green.svg",
+    "dark": "/logo/fgpu_white.svg"
+  },
   "navigation": {
     "global": {
       "anchors": [
