@@ -1,9 +1,0 @@
-# Data Center and Operations
-
-[01_Data_Center_Specifications](Data%20Center%20and%20Operations/01_Data_Center_Specifications%202d5385f9a84f81c5bdd3d125294bc5c1.md)
-
-[02_Monitoring_and_Reliability](Data%20Center%20and%20Operations/02_Monitoring_and_Reliability%202d5385f9a84f8131a05fc54ab9c48886.md)
-
-[03_Service_Level_Agreements](Data%20Center%20and%20Operations/03_Service_Level_Agreements%202d5385f9a84f8167a95af2239fa6d12b.md)
-
-[04_User_Agreements_and_Policies](Data%20Center%20and%20Operations/04_User_Agreements_and_Policies%202d5385f9a84f81d0b158c63afc41ba91.md)

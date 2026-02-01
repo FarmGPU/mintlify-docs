@@ -47,7 +47,8 @@
           {
             "group": "Products & Services",
             "pages": [
-              "company/products-and-services/products"
+              "company-docs/products-services/index",
+              "company-docs/products-services/partners"
             ]
           },
           {
@@ -80,7 +81,8 @@
             "group": "Team & Culture",
             "pages": [
               "company-docs/team-culture/team-structure",
-              "company-docs/team-culture/culture"
+              "company-docs/team-culture/culture",
+              "company-docs/team-culture/brand"
             ]
           }
         ]

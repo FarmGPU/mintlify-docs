@@ -1,7 +1,0 @@
-# Company Overview
-
-[01_Company_Snapshot](Company%20Overview/01_Company_Snapshot%202d5385f9a84f8155a541eab12ec945a9.md)
-
-[02_Mission_Vision_Positioning](Company%20Overview/02_Mission_Vision_Positioning%202d5385f9a84f814b893efcae7b5c16a2.md)
-
-[03_Founders_Thesis](Company%20Overview/03_Founders_Thesis%202d5385f9a84f8102a285d12db24f34c7.md)

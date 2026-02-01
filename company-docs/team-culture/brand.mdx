@@ -1,0 +1,52 @@
+---
+title: "Brand"
+description: "FarmGPU brand kit and AI-ready tokens"
+icon: "palette"
+---
+
+## Brand kit downloads
+
+<CardGroup cols={2}>
+  <Card title="Logo files (ZIP)" href="/brand/logo.zip">
+    Primary logos and lockups for print and web.
+  </Card>
+  <Card title="Brand guidelines (PDF)" href="/brand/FarmGPU Brand.pdf">
+    Official brand rules, colors, typography, and usage.
+  </Card>
+</CardGroup>
+
+## AI-ready brand tokens (minimal)
+
+Use this compact set for apps, themes, and agents that need consistent FarmGPU styling without the full guide.
+
+```json
+{
+  "brand": "FarmGPU",
+  "colors": {
+    "background": "#091000",
+    "text": "#FAFFF5",
+    "accent": "#88FF00",
+    "accentDark": "#529900",
+    "accentLight": "#A0FF33",
+    "surface": "#1A1C17",
+    "surfaceAlt": "#272A22",
+    "border": "#34382E"
+  },
+  "fonts": {
+    "sans": "\"Spline Sans\", system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "mono": "\"Spline Sans Mono\", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace"
+  },
+  "radii": { "sm": "6px", "md": "10px", "lg": "16px" },
+  "spacing": { "xs": "4px", "sm": "8px", "md": "16px", "lg": "24px", "xl": "32px" },
+  "buttons": {
+    "primary": { "bg": "#88FF00", "text": "#091000" },
+    "ghost": { "bg": "transparent", "text": "#88FF00", "border": "#88FF00" }
+  }
+}
+```
+
+## Usage notes
+
+- Default background is near-black; use volt accent for primary actions only.
+- Text should be white or stone-grey; avoid pure grey on dark backgrounds.
+- Use Spline Sans for UI and Spline Sans Mono for metrics/logs.
