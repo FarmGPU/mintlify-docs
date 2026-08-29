@@ -33,6 +33,10 @@ FarmGPU commits to providing the following **Monthly Uptime Percentage** for Cus
 
 Monthly Uptime Percentage = [(Total Minutes in Month – Downtime Minutes) / Total Minutes in Month] × 100
 
+### Measurement Source of Truth
+
+Downtime start and end timestamps are determined from **FarmGPU's monitoring and telemetry systems**, which serve as the authoritative record for all SLA calculations. Relevant monitoring data for a disputed period will be shared with Customer on request. If Customer presents evidence of unavailability during a period where FarmGPU's monitoring has a gap or was itself unavailable, FarmGPU will consider Customer's records in good faith when validating the claim.
+
 ## Definition of Downtime
 
 "Downtime" means any period of time (measured in minutes) during which Customer's Reserved Capacity or Bare Metal Services are unavailable for use due to a failure **within FarmGPU's control**, as demonstrated by Customer's inability to:
@@ -112,11 +116,24 @@ FarmGPU will use commercially reasonable efforts to meet the following **target*
 | Memory failure | 24 hours |
 | Power supply failure | 12 hours |
 
-**Initial Response Time** means the time from FarmGPU's detection of the failure or receipt of Customer notice (whichever is earlier) until technical personnel begin active diagnosis.
-
 **Target Resolution Time** means the time from detection/notice (whichever is earlier) until service is restored or equivalent replacement capacity is provisioned.
 
-Target resolution times are subject to site access, safety constraints, and hardware availability.
+Target resolution times are subject to site access, safety constraints, and hardware availability. Initial response times are governed by the severity matrix below.
+
+## Support Response and Severity Classification
+
+FarmGPU provides 24×7 incident response for Reserved Capacity and Bare Metal Services against the following severity matrix:
+
+| PRIORITY | DESCRIPTION | INITIAL RESPONSE | TARGET FIX OR WORKAROUND |
+| --- | --- | --- | --- |
+| P1 | Service or node down or inaccessible; no workaround | 15 minutes | 8 hours |
+| P2 | Service operational with substantial errors or degraded capacity | 4 hours | 1 business day |
+| P3 | Errors impairing full benefit of the service; workaround available | 8 hours | 2 business days |
+| P4 | Minor errors, cosmetic issues, general questions | 1 business day | 3 business days |
+
+**Initial Response Time** means the time from FarmGPU's detection of the failure or receipt of Customer notice (whichever is earlier) until technical personnel begin active diagnosis.
+
+**Severity classification:** initial classification of an incident's priority is made by FarmGPU. If Customer disagrees with a classification, Customer may escalate through the support escalation path, and the parties will confer in good faith to resolve the classification promptly.
 
 ## Service Credits
 
@@ -157,7 +174,7 @@ If Capacity Availability Percentage falls below 95% in any calendar month:
 | 85% to < 90% | 25% |
 | < 85% | 35% |
 
-### Bare Metal Enhanced Credits (Optional; Keep or Remove)
+### Bare Metal Enhanced Credits
 
 For Bare Metal Services only, if a critical hardware replacement exceeds the applicable **Target Resolution Time** by more than 50% due to conditions within FarmGPU's control, Customer receives additional Service Credits:
 
@@ -167,7 +184,7 @@ For Bare Metal Services only, if a critical hardware replacement exceeds the app
 | 100% to < 200% over target | 10% |
 | 200%+ over target | 15% |
 
-Enhanced credits are cumulative with availability credits, subject to the caps in Section 15.10.
+Enhanced credits are cumulative with availability credits, subject to the Service Credit Caps below.
 
 ## Service Credit Calculation; Caps
 
@@ -175,16 +192,16 @@ Service Credits are calculated as a percentage of the monthly recurring fees pai
 
 **Service Credit Caps:**
 
-- Maximum Service Credits in any single calendar month: **30%** of the total monthly fees for the affected Order Form
+- Maximum Service Credits in any single calendar month: **50%** of the total monthly fees for the affected Order Form (equal to the highest single credit tier; enhanced credits are cumulative only up to this cap)
 - Maximum aggregate Service Credits over any twelve (12) month period: **30%** of the total contract value under the affected Order Form
 
 ## Chronic Failure Termination Right
 
-If:
+If, for Customer's applicable service tier:
 
-(a) Monthly Uptime Percentage falls below **99.5%** for two (2) consecutive calendar months; OR
+(a) Monthly Uptime Percentage falls below the **Committed Monthly Uptime Percentage** for that tier for two (2) consecutive calendar months; OR
 
-(b) Monthly Uptime Percentage falls below **99.0%** for any single calendar month;
+(b) Monthly Uptime Percentage falls more than **0.5 percentage points below** the Committed Monthly Uptime Percentage for that tier in any single calendar month (e.g., below 98.5% on the Standard tier, below 99.2% on the Premium tier, below 99.4% on the Enterprise tier);
 
 Customer may, upon forty-five (45) days' prior written notice, terminate the affected Order Form without early termination fees. FarmGPU shall refund any prepaid fees allocable to services not yet rendered, pro-rated as of the effective termination date.
 
