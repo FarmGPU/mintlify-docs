@@ -1,0 +1,69 @@
+---
+title: "Data Retention Policy"
+description: "Retention schedules for the FarmGPU LLM inference API"
+icon: "clock-rotate-left"
+---
+
+# FarmGPU Inference API Data Retention Policy
+
+**Effective date:** August 29, 2026
+
+This policy defines how long each category of data associated with the
+**FarmGPU Inference API** is kept, and how it is deleted. It should be read
+together with the [Privacy Policy](/company-docs/legal/privacy-policy).
+
+The governing principle: **request content is never retained; operational
+metadata is retained only as long as it is useful for running a reliable
+service.**
+
+---
+
+## Retention schedule
+
+| Data category | What it contains | Retention | Purpose |
+|---|---|---|---|
+| **Prompts and completions** | Request and response content, tool definitions, reasoning output | **Not persisted.** In memory only, for the duration of the request | Serving the request |
+| **In-memory prefix cache** | Token-level KV state of recent request prefixes, in GPU memory | Transient; continuously evicted, fully cleared on process restart | Latency reduction for repeated prefixes |
+| **Distributed traces** | Request lifecycle timing and sizes (OpenTelemetry spans); no content | Up to **7 days**, then automatically deleted | Reliability debugging |
+| **Application logs** | Serving-engine and gateway logs: timestamps, status codes, request/queue state; no content | Up to **30 days**, then automatically deleted | Incident investigation, abuse prevention |
+| **Edge / network logs** | Connection metadata at the network perimeter (IPs, URLs, timing) | Up to **30 days** | Security, DDoS and abuse mitigation |
+| **Aggregate metrics** | Latency histograms, token-count totals, error and utilization counters; fully aggregated, no per-request payloads | Up to **13 months** | Capacity planning, SLO reporting |
+| **Usage and billing records** | Per-partner / per-customer token counts and request totals | **7 years** | Invoicing, accounting, and tax obligations |
+| **Direct-customer account data** | Business contact and billing details | Life of the agreement **+ 7 years** | Contract and accounting obligations |
+
+---
+
+## How deletion works
+
+- **Content is never written**, so there is nothing to delete: prompts and
+  completions exist only in volatile GPU and host memory and are gone when the
+  request completes, the cache entry is evicted, or the process restarts.
+- Telemetry stores (traces, logs, metrics) enforce the windows above through
+  **automatic time-based expiry** — deletion does not depend on a manual
+  process.
+- Backups of telemetry are subject to the same maximum windows.
+
+## Zero Data Retention (ZDR) status
+
+Our operating posture is zero retention of request content. However, we do not
+yet advertise a formal **ZDR designation**: we are completing an independent
+validation pass confirming that no diagnostic system (including request
+tracing) can capture content under any configuration. Until that validation is
+published, partners should treat this endpoint as **"no content logging or
+training, short-lived operational telemetry"** rather than certified ZDR.
+
+## Exceptions
+
+Retention windows may be extended only when:
+
+- Data is subject to a **legal hold** or valid legal process, or
+- Metadata is needed for an active **security or abuse investigation**.
+
+In both cases the extension applies only to the specific records involved,
+access is restricted to authorized personnel, and normal expiry resumes when
+the matter closes. These exceptions cannot create retention of prompt or
+completion content, because that content is never stored in the first place.
+
+## Questions
+
+Contact **privacy@farmgpu.com**.

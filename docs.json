@@ -78,6 +78,13 @@
             ]
           },
           {
+            "group": "Legal & Policies",
+            "pages": [
+              "company-docs/legal/privacy-policy",
+              "company-docs/legal/data-retention-policy"
+            ]
+          },
+          {
             "group": "Team & Culture",
             "pages": [
               "company-docs/team-culture/team-structure",
