@@ -63,9 +63,7 @@
             "group": "Data Center & Operations",
             "pages": [
               "company-docs/data-center-operations/data-center-specifications",
-              "company-docs/data-center-operations/monitoring-reliability",
-              "company-docs/data-center-operations/service-level-agreements",
-              "company-docs/data-center-operations/user-agreements-policies"
+              "company-docs/data-center-operations/monitoring-reliability"
             ]
           },
           {
@@ -80,6 +78,8 @@
           {
             "group": "Legal & Policies",
             "pages": [
+              "company-docs/legal/user-agreements-policies",
+              "company-docs/legal/service-level-agreements",
               "company-docs/legal/privacy-policy",
               "company-docs/legal/data-retention-policy"
             ]
@@ -101,6 +101,16 @@
     "dark": "/logo/FarmGPU_White_Full.svg",
     "href": "/"
   },
+  "redirects": [
+    {
+      "source": "/company-docs/data-center-operations/service-level-agreements",
+      "destination": "/company-docs/legal/service-level-agreements"
+    },
+    {
+      "source": "/company-docs/data-center-operations/user-agreements-policies",
+      "destination": "/company-docs/legal/user-agreements-policies"
+    }
+  ],
   "navbar": {
     "links": []
   },
