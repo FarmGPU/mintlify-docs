@@ -1,0 +1,107 @@
+---
+title: "Operations and webhooks"
+description: "Follow asynchronous changes by polling or by signed callback"
+icon: "arrows-rotate"
+---
+
+Anything that changes infrastructure is asynchronous. The request returns immediately with an operation, and the work runs in the background.
+
+## Operations
+
+```json
+{
+  "id": "op_0123456789abcdef",
+  "type": "instance.create",
+  "status": "in_progress",
+  "resource_id": "i-0a1b2c3d4e5f",
+  "error": null,
+  "created_at": "2026-11-18T17:04:11Z",
+  "completed_at": null
+}
+```
+
+`status` is one of `pending`, `in_progress`, `completed` or `failed`. When it is `failed`, `error` holds a `code` and a `message`.
+
+| Resource | Operation types |
+| --- | --- |
+| Instances | `instance.create`, `instance.delete`, `instance.start`, `instance.stop`, `instance.restart`, `instance.hard_reset` |
+| Volumes | `volume.create`, `volume.attach`, `volume.detach`, `volume.resize`, `volume.clone`, `volume.soft_delete`, `volume.restore`, `volume.purge` |
+| Filesystems | `filesystem.create`, `filesystem.resize`, `filesystem.delete` |
+
+Poll [`GET /v1/operations/{operation_id}`](/api-reference/operations/get-operation) every few seconds while the status is `pending` or `in_progress`.
+
+## Webhooks
+
+Register a URL and FarmGPU sends a `POST` when a matching operation finishes.
+
+```bash
+curl -X POST https://api.farmgpu.com/v1/webhooks \
+  -H "Authorization: Bearer $FARMGPU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com/hooks/farmgpu",
+    "events": ["instance.created", "instance.error"],
+    "secret": "a-long-random-string"
+  }'
+```
+
+### Events
+
+| Event | Sent when |
+| --- | --- |
+| `instance.created` | An instance finished provisioning |
+| `instance.started` | A stopped instance is running again |
+| `instance.stopped` | An instance stopped |
+| `instance.deleted` | An instance was terminated |
+| `instance.error` | An instance operation failed |
+| `volume.resize_completed` | A volume resize finished |
+| `volume.clone_completed` | A volume clone finished |
+
+### Payload
+
+```json
+{
+  "id": "op_0123456789abcdef",
+  "event": "instance.created",
+  "timestamp": "2026-11-18T17:06:02+00:00",
+  "data": {
+    "operation_id": "op_0123456789abcdef",
+    "operation_type": "instance.create",
+    "resource_id": "i-0a1b2c3d4e5f",
+    "status": "completed",
+    "error": null,
+    "account_id": "acct_example"
+  }
+}
+```
+
+`id` is the operation id. Use it to ignore a delivery you have already handled.
+
+### Verify the signature
+
+Each delivery carries these headers:
+
+| Header | Value |
+| --- | --- |
+| `X-FarmGPU-Event` | The event name |
+| `X-FarmGPU-Delivery-Id` | A unique id for this delivery |
+| `X-FarmGPU-Operation-Id` | The operation that caused it |
+| `X-FarmGPU-Timestamp` | When the delivery was signed |
+| `X-FarmGPU-Signature` | `sha256=` followed by the HMAC-SHA256, in hex, of the timestamp, a full stop, and the raw request body, keyed with your secret |
+
+```python
+import hashlib
+import hmac
+
+def is_from_farmgpu(secret: str, timestamp: str, raw_body: bytes, signature: str) -> bool:
+    expected = hmac.new(
+        secret.encode(), f"{timestamp}.".encode() + raw_body, hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(f"sha256={expected}", signature)
+```
+
+Verify against the raw bytes of the body, before parsing it, and reject timestamps that are too old for your tolerance.
+
+### Retries
+
+A delivery that does not get a `2xx` response is retried after 1 second, 5 seconds, 30 seconds, 5 minutes, 30 minutes and 2 hours, then abandoned. Webhook URLs must be public; addresses on private networks are refused when the webhook is created.

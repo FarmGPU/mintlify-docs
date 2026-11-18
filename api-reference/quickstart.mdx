@@ -1,0 +1,105 @@
+---
+title: "Quickstart"
+description: "Launch a GPU instance, wait for it, and clean up"
+icon: "rocket"
+---
+
+You need an API token. Put it in your shell:
+
+```bash
+export FARMGPU_TOKEN=fgpu_live_...
+export FARMGPU_API=https://api.farmgpu.com
+```
+
+<Steps>
+  <Step title="Pick an instance type, region and image">
+    ```bash
+    curl -s $FARMGPU_API/v1/instance-types -H "Authorization: Bearer $FARMGPU_TOKEN"
+    curl -s $FARMGPU_API/v1/regions        -H "Authorization: Bearer $FARMGPU_TOKEN"
+    curl -s $FARMGPU_API/v1/images         -H "Authorization: Bearer $FARMGPU_TOKEN"
+    ```
+
+    Each instance type lists its GPUs, vCPUs, memory, disk, `hourly_price_cents` and the regions where it is available now.
+  </Step>
+
+  <Step title="Add your SSH key">
+    ```bash
+    curl -s -X POST $FARMGPU_API/v1/ssh-keys \
+      -H "Authorization: Bearer $FARMGPU_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d "{\"name\": \"laptop\", \"public_key\": \"$(cat ~/.ssh/id_ed25519.pub)\"}"
+    ```
+
+    Keep the `id` from the response.
+  </Step>
+
+  <Step title="Create the instance">
+    ```bash
+    curl -s -X POST $FARMGPU_API/v1/instances \
+      -H "Authorization: Bearer $FARMGPU_TOKEN" \
+      -H "Content-Type: application/json" \
+      -H "Idempotency-Key: $(uuidgen)" \
+      -d '{
+        "name": "train-01",
+        "instance_type": "l40s.1x",
+        "region": "us-rancho-cordova-1",
+        "image": "ubuntu24",
+        "ssh_key_ids": ["<your key id>"]
+      }'
+    ```
+
+    The response arrives at once with status `201` and two objects: the `instance`, in status `provisioning`, and the `operation` that is creating it.
+
+    ```json
+    {
+      "instance": { "id": "i-0a1b2c3d4e5f", "status": "provisioning", "...": "..." },
+      "operation": { "id": "op_0123456789abcdef", "type": "instance.create", "status": "pending", "resource_id": "i-0a1b2c3d4e5f" }
+    }
+    ```
+  </Step>
+
+  <Step title="Wait for the operation">
+    ```bash
+    curl -s $FARMGPU_API/v1/operations/op_0123456789abcdef \
+      -H "Authorization: Bearer $FARMGPU_TOKEN"
+    ```
+
+    Poll every few seconds until `status` is `completed` or `failed`. A failed operation carries an `error` with a `code` and a `message`.
+  </Step>
+
+  <Step title="Connect">
+    ```bash
+    curl -s $FARMGPU_API/v1/instances/i-0a1b2c3d4e5f \
+      -H "Authorization: Bearer $FARMGPU_TOKEN"
+    ```
+
+    When the instance is `running`, `ip_addresses` holds its address. The console shows the exact SSH command for your instance.
+  </Step>
+
+  <Step title="Stop or terminate">
+    Stopping keeps the instance and its disk. Terminating releases it.
+
+    ```bash
+    # stop
+    curl -s -X POST $FARMGPU_API/v1/instances/i-0a1b2c3d4e5f/actions \
+      -H "Authorization: Bearer $FARMGPU_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d '{"action": "stop"}'
+
+    # terminate
+    curl -s -X DELETE $FARMGPU_API/v1/instances/i-0a1b2c3d4e5f \
+      -H "Authorization: Bearer $FARMGPU_TOKEN"
+    ```
+  </Step>
+</Steps>
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Add storage" icon="hard-drive" href="/api-reference/volumes/create-volume">
+    Create a block volume and attach it to a running instance.
+  </Card>
+  <Card title="Verify a confidential instance" icon="shield-check" href="/api-reference/instances/get-instance-attestation">
+    Read the attestation report of an Intel TDX instance.
+  </Card>
+</CardGroup>
