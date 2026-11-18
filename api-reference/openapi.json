@@ -1,0 +1,5326 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FarmGPU Cloud API",
+    "description": "REST API for provisioning and managing GPU virtual machines on FarmGPU's bare-metal KVM infrastructure (RHEL 10). Designed for direct customer use and marketplace partner integration (e.g. Shadeform).",
+    "version": "1.1.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.farmgpu.com",
+      "description": "Production"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health check",
+        "description": "Health check endpoint. Verifies DB connectivity; reports VAST in live mode.",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/tokens": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Create token",
+        "description": "Create a new API token. The secret is only returned once.",
+        "operationId": "create_token_v1_auth_tokens_post",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/APITokenWithSecretResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "List tokens",
+        "description": "List API tokens for the account. Secrets are never returned.",
+        "operationId": "list_tokens_v1_auth_tokens_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 25,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/tokens/{token_id}": {
+      "delete": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Revoke token",
+        "description": "Revoke an API token.",
+        "operationId": "revoke_token_v1_auth_tokens__token_id__delete",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "token_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ssh-keys": {
+      "post": {
+        "tags": [
+          "SSH Keys"
+        ],
+        "summary": "Create SSH key",
+        "description": "Add an SSH public key.",
+        "operationId": "create_ssh_key_v1_ssh_keys_post",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSSHKeyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SSHKeyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "SSH Keys"
+        ],
+        "summary": "List SSH keys",
+        "description": "List all SSH keys for the account.",
+        "operationId": "list_ssh_keys_v1_ssh_keys_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 25,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SSHKeyListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ssh-keys/{key_id}": {
+      "get": {
+        "tags": [
+          "SSH Keys"
+        ],
+        "summary": "Get SSH key",
+        "description": "Get SSH key details.",
+        "operationId": "get_ssh_key_v1_ssh_keys__key_id__get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "key_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SSHKeyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "SSH Keys"
+        ],
+        "summary": "Delete SSH key",
+        "description": "Delete an SSH key. Does not affect running instances.",
+        "operationId": "delete_ssh_key_v1_ssh_keys__key_id__delete",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "key_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/images": {
+      "get": {
+        "tags": [
+          "Images"
+        ],
+        "summary": "List images",
+        "description": "List available OS images. All images include NVIDIA drivers and CUDA pre-installed.",
+        "operationId": "list_images_v1_images_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "os",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by OS",
+              "enum": [
+                "ubuntu",
+                "rhel",
+                "rocky"
+              ],
+              "title": "Os"
+            },
+            "description": "Filter by OS"
+          },
+          {
+            "name": "available",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Only images some live host can boot right now (default). false = whole catalog, each flagged with `available`.",
+              "default": true,
+              "title": "Available"
+            },
+            "description": "Only images some live host can boot right now (default). false = whole catalog, each flagged with `available`."
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Judge availability within one region",
+              "title": "Region"
+            },
+            "description": "Judge availability within one region"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/startup-scripts": {
+      "post": {
+        "tags": [
+          "Startup Scripts"
+        ],
+        "summary": "Create startup script",
+        "description": "Save a reusable startup script.",
+        "operationId": "create_startup_script_v1_startup_scripts_post",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStartupScriptRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartupScriptResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Startup Scripts"
+        ],
+        "summary": "List startup scripts",
+        "description": "List saved startup scripts.",
+        "operationId": "list_startup_scripts_v1_startup_scripts_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 25,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartupScriptListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/startup-scripts/{script_id}": {
+      "get": {
+        "tags": [
+          "Startup Scripts"
+        ],
+        "summary": "Get startup script",
+        "description": "Get startup script details.",
+        "operationId": "get_startup_script_v1_startup_scripts__script_id__get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "script_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Script Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartupScriptResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Startup Scripts"
+        ],
+        "summary": "Delete startup script",
+        "description": "Delete a startup script.",
+        "operationId": "delete_startup_script_v1_startup_scripts__script_id__delete",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "script_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Script Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/regions": {
+      "get": {
+        "tags": [
+          "Regions"
+        ],
+        "summary": "List regions",
+        "description": "List available regions.",
+        "operationId": "list_regions_v1_regions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegionListResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/instance-types": {
+      "get": {
+        "tags": [
+          "Instance Types"
+        ],
+        "summary": "List instance types",
+        "description": "List available GPU instance types with specs, pricing, and real-time availability.",
+        "operationId": "list_instance_types_v1_instance_types_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "gpu_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by GPU model (e.g. H100, H200, B200)",
+              "title": "Gpu Type"
+            },
+            "description": "Filter by GPU model (e.g. H100, H200, B200)"
+          },
+          {
+            "name": "gpu_count",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 8,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by GPU count",
+              "title": "Gpu Count"
+            },
+            "description": "Filter by GPU count"
+          },
+          {
+            "name": "available",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Only return types with available capacity",
+              "default": false,
+              "title": "Available"
+            },
+            "description": "Only return types with available capacity"
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter availability to a specific region",
+              "title": "Region"
+            },
+            "description": "Filter availability to a specific region"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Currency for pricing",
+              "enum": [
+                "usd",
+                "eur"
+              ],
+              "default": "usd",
+              "title": "Currency"
+            },
+            "description": "Currency for pricing"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstanceTypeListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/instance-availability": {
+      "get": {
+        "tags": [
+          "Instance Availability"
+        ],
+        "summary": "List instance availability",
+        "description": "Get real-time availability for all instance types across all regions.",
+        "operationId": "list_instance_availability_v1_instance_availability_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "is_spot",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Check spot instance availability",
+              "default": false,
+              "title": "Is Spot"
+            },
+            "description": "Check spot instance availability"
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter to a specific region",
+              "title": "Region"
+            },
+            "description": "Filter to a specific region"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstanceAvailabilityListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/instance-availability/{instance_type}": {
+      "get": {
+        "tags": [
+          "Instance Availability"
+        ],
+        "summary": "Check availability for one type",
+        "description": "Check if a specific instance type is available. Returns boolean + per-region breakdown.",
+        "operationId": "check_instance_availability_v1_instance_availability__instance_type__get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "instance_type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Instance Type"
+            }
+          },
+          {
+            "name": "is_spot",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Check spot availability",
+              "default": false,
+              "title": "Is Spot"
+            },
+            "description": "Check spot availability"
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter to a specific region",
+              "title": "Region"
+            },
+            "description": "Filter to a specific region"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstanceAvailabilityCheckResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/hosts": {
+      "get": {
+        "tags": [
+          "Hosts"
+        ],
+        "summary": "List hosts",
+        "operationId": "list_hosts_v1_hosts_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "region",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "active, maintenance, offline; default all",
+              "title": "Status"
+            },
+            "description": "active, maintenance, offline; default all"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HostListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-hidden": true
+      }
+    },
+    "/v1/quotas": {
+      "get": {
+        "tags": [
+          "Quotas"
+        ],
+        "summary": "Get quotas",
+        "operationId": "get_quotas_v1_quotas_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuotasResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/instances": {
+      "post": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "Create instance",
+        "description": "Create a GPU VM instance. Async \u2014 returns instance + operation immediately.",
+        "operationId": "create_v1_instances_post",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInstanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "List instances",
+        "description": "List all instances for the account.\n\nTag filter is repeatable: `?tag=env=prod&tag=team=ml` returns\ninstances where BOTH `env=prod` AND `team=ml` are set. Malformed\ntag values (no `=`) are silently ignored.",
+        "operationId": "list_instances_v1_instances_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "instance_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Instance Type"
+            }
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Region"
+            }
+          },
+          {
+            "name": "tag",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by tag, format: key=value. Repeatable \u2014 all tags must match.",
+              "title": "Tag"
+            },
+            "description": "Filter by tag, format: key=value. Repeatable \u2014 all tags must match."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 25,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstanceListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/instances/{instance_id}": {
+      "get": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "Get instance",
+        "description": "Get instance details including GPU health array.",
+        "operationId": "get_instance_v1_instances__instance_id__get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "instance_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Instance Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstanceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "Update instance",
+        "description": "Update instance metadata (name, tags, description).",
+        "operationId": "update_instance_v1_instances__instance_id__patch",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "instance_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Instance Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateInstanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InstanceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "Terminate instance",
+        "description": "Terminate and delete an instance. Local volumes destroyed, persistent detached.",
+        "operationId": "terminate_instance_v1_instances__instance_id__delete",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "instance_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Instance Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/instances/{instance_id}/actions": {
+      "post": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "Run instance action",
+        "description": "Perform an instance action: start, stop, restart, hard_reset.",
+        "operationId": "instance_action_v1_instances__instance_id__actions_post",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "instance_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Instance Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InstanceActionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/instances/{instance_id}/console": {
+      "get": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "Get console URL",
+        "description": "Mint a single-use console URL for the instance.\n\nReturns a wss:// URL with a short-TTL bearer token in the query\nstring. Open it from xterm.js (or wscat) within `expires_at` to attach\nto the QEMU serial line \u2014 bidirectional, hot-attached, no VM restart.\n\n`type=vnc` is reserved; we currently only ship serial because the GPU\nVMs are headless and graphics frame buffers waste RAM that the GPU\nworkload could otherwise use.",
+        "operationId": "get_console_url_v1_instances__instance_id__console_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "instance_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Instance Id"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "vnc",
+                "serial"
+              ],
+              "default": "serial",
+              "title": "Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/instances/{instance_id}/console/view": {
+      "get": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "Get console view",
+        "description": "Browser-friendly serial console \u2014 a tiny xterm.js page that calls\nGET /console + opens the WebSocket. No server-side auth on this route\n(it's static HTML); the page itself collects a bearer token and uses\nit client-side. The terminal stream is gated by the one-shot console\ntoken minted via /console (which DOES require auth).",
+        "operationId": "get_console_view_v1_instances__instance_id__console_view_get",
+        "parameters": [
+          {
+            "name": "instance_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Instance Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "x-hidden": true
+      }
+    },
+    "/v1/instances/{instance_id}/attestation": {
+      "get": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "Get instance attestation",
+        "description": "Get attestation report for a CC-enabled instance.\n\nReturns Intel TDX quote, NVIDIA GPU attestation JWT, measurement\nregisters, and verification status. Returns 400 if the instance\nwas not launched in CC mode.",
+        "operationId": "get_instance_attestation_v1_instances__instance_id__attestation_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "instance_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Instance Id"
+            }
+          },
+          {
+            "name": "nonce",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 64
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Client nonce for freshness proof",
+              "title": "Nonce"
+            },
+            "description": "Client nonce for freshness proof"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/instances/{instance_id}/usage": {
+      "get": {
+        "tags": [
+          "Instances"
+        ],
+        "summary": "Get instance usage",
+        "description": "Get usage/metering data for a specific instance.",
+        "operationId": "get_instance_usage_v1_instances__instance_id__usage_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "instance_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Instance Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/operations": {
+      "get": {
+        "tags": [
+          "Operations"
+        ],
+        "summary": "List operations",
+        "description": "List async operations for this account, newest first.",
+        "operationId": "list_operations_v1_operations_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by status (in_progress, completed, failed)",
+              "title": "Status"
+            },
+            "description": "Filter by status (in_progress, completed, failed)"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by operation type (e.g. instance.create)",
+              "title": "Type"
+            },
+            "description": "Filter by operation type (e.g. instance.create)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/operations/{operation_id}": {
+      "get": {
+        "tags": [
+          "Operations"
+        ],
+        "summary": "Get operation",
+        "description": "Get async operation status.",
+        "operationId": "get_operation_v1_operations__operation_id__get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "operation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Operation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/webhooks": {
+      "post": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Create webhook",
+        "description": "Register a webhook endpoint for event delivery.",
+        "operationId": "create_webhook_v1_webhooks_post",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWebhookRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "List webhooks",
+        "description": "List registered webhook configurations.",
+        "operationId": "list_webhooks_v1_webhooks_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 25,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/webhooks/{webhook_id}": {
+      "delete": {
+        "tags": [
+          "Webhooks"
+        ],
+        "summary": "Delete webhook",
+        "description": "Unregister a webhook.",
+        "operationId": "delete_webhook_v1_webhooks__webhook_id__delete",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Webhook Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/usage": {
+      "get": {
+        "tags": [
+          "Usage"
+        ],
+        "summary": "Get usage summary",
+        "description": "Get account usage summary \u2014 aggregated GPU-hours and cost estimates.",
+        "operationId": "get_usage_summary_v1_usage_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Period start (default: start of current month)",
+              "title": "Start"
+            },
+            "description": "Period start (default: start of current month)"
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Period end (default: now)",
+              "title": "End"
+            },
+            "description": "Period end (default: now)"
+          },
+          {
+            "name": "group_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "instance_type",
+                "instance",
+                "region",
+                "tag",
+                "day"
+              ],
+              "default": "instance_type",
+              "title": "Group By"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageSummaryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/balance": {
+      "get": {
+        "tags": [
+          "Usage"
+        ],
+        "summary": "Get balance",
+        "description": "Get account prepaid balance.",
+        "operationId": "get_balance_v1_balance_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BalanceResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/volumes": {
+      "post": {
+        "tags": [
+          "Volumes"
+        ],
+        "summary": "Create volume",
+        "description": "Create a persistent volume.",
+        "operationId": "create_volume_v1_volumes_post",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVolumeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VolumeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Volumes"
+        ],
+        "summary": "List volumes",
+        "description": "List volumes. Soft-deleted volumes are hidden by default \u2014 pass\n?include_deleted=true to include trash, or ?status=deleted to get only trash.",
+        "operationId": "list_volumes_v1_volumes_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          },
+          {
+            "name": "include_deleted",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Include soft-deleted (trash) volumes",
+              "default": false,
+              "title": "Include Deleted"
+            },
+            "description": "Include soft-deleted (trash) volumes"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 25,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VolumeListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/volumes/{volume_id}": {
+      "get": {
+        "tags": [
+          "Volumes"
+        ],
+        "summary": "Get volume",
+        "operationId": "get_volume_v1_volumes__volume_id__get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "volume_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Volume Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VolumeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Volumes"
+        ],
+        "summary": "Delete volume",
+        "description": "Delete a volume.\n\nBy default this is a **soft-delete**: the volume row stays in the DB with\n``status='deleted'`` and ``deleted_at=now()``, and the underlying LV on the\nhost is left intact so it can be recovered via POST /volumes/{id}/restore\nwithin the trash TTL (default 24 h). A background reaper purges trashed\nvolumes after the TTL expires.\n\nPass ``?purge=true`` to skip the trash and hard-delete immediately.",
+        "operationId": "delete_volume_v1_volumes__volume_id__delete",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "volume_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Volume Id"
+            }
+          },
+          {
+            "name": "purge",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Skip trash and permanently delete immediately",
+              "default": false,
+              "title": "Purge"
+            },
+            "description": "Skip trash and permanently delete immediately"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/volumes/{volume_id}/restore": {
+      "post": {
+        "tags": [
+          "Volumes"
+        ],
+        "summary": "Restore volume",
+        "description": "Restore a soft-deleted volume. Only works while the volume is still in\ntrash (i.e. before the reaper has purged it).",
+        "operationId": "restore_volume_v1_volumes__volume_id__restore_post",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "volume_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Volume Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VolumeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/volumes/{volume_id}/attach": {
+      "post": {
+        "tags": [
+          "Volumes"
+        ],
+        "summary": "Attach volume",
+        "description": "Attach volume to an instance.",
+        "operationId": "attach_volume_v1_volumes__volume_id__attach_post",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "volume_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Volume Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AttachVolumeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/volumes/{volume_id}/detach": {
+      "post": {
+        "tags": [
+          "Volumes"
+        ],
+        "summary": "Detach volume",
+        "description": "Detach volume from instance.",
+        "operationId": "detach_volume_v1_volumes__volume_id__detach_post",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "volume_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Volume Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/volumes/{volume_id}/resize": {
+      "post": {
+        "tags": [
+          "Volumes"
+        ],
+        "summary": "Resize volume",
+        "description": "Resize a volume (expand only, online).",
+        "operationId": "resize_volume_v1_volumes__volume_id__resize_post",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "volume_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Volume Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResizeVolumeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/volumes/{volume_id}/clone": {
+      "post": {
+        "tags": [
+          "Volumes"
+        ],
+        "summary": "Clone volume",
+        "description": "Clone a volume (same-region only for MVP).\n\nLive mode: creates an LVM thin snapshot on the source's host. O(1)\nmetadata op; the two volumes diverge via CoW after the snap.\n\nStub mode: creates a DB row pointing at nothing.\n\nCross-region clone is rejected with 422 \u2014 it requires copying data\nover the network and is out of MVP scope.",
+        "operationId": "clone_volume_v1_volumes__volume_id__clone_post",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "volume_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Volume Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloneVolumeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/filesystems": {
+      "post": {
+        "tags": [
+          "Filesystems"
+        ],
+        "summary": "Create filesystem",
+        "description": "Create a filesystem: its own VAST view with a hard quota of size_gb GiB.\n\nLive mode answers with status `creating` and finishes in the background\n(Operation `filesystem.create`); stub mode creates it inline.",
+        "operationId": "create_filesystem_v1_filesystems_post",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFilesystemRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilesystemResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Filesystems"
+        ],
+        "summary": "List filesystems",
+        "operationId": "list_filesystems_v1_filesystems_get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 25,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilesystemListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/filesystems/{filesystem_id}": {
+      "get": {
+        "tags": [
+          "Filesystems"
+        ],
+        "summary": "Get filesystem",
+        "operationId": "get_filesystem_v1_filesystems__filesystem_id__get",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "filesystem_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Filesystem Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilesystemResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Filesystems"
+        ],
+        "summary": "Delete filesystem",
+        "description": "Delete a filesystem. Must not be mounted by any instances.\n\nVAST-backed: removes the view and quota (live mode: status `deleting`\nuntil the background job removes the row). Level-0 rows: DB only.",
+        "operationId": "delete_filesystem_v1_filesystems__filesystem_id__delete",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "filesystem_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Filesystem Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/filesystems/{filesystem_id}/resize": {
+      "post": {
+        "tags": [
+          "Filesystems"
+        ],
+        "summary": "Resize filesystem",
+        "description": "Resize a filesystem (expand only). VAST-backed: changes the hard quota.",
+        "operationId": "resize_filesystem_v1_filesystems__filesystem_id__resize_post",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "filesystem_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Filesystem Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResizeFilesystemRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/attestation/references": {
+      "get": {
+        "tags": [
+          "Attestation"
+        ],
+        "summary": "Get attestation references",
+        "description": "Reference measurements for confidential (Intel TDX) instances.\n\nFor every sealed guest image release and every instance shape recorded for\nit: MRTD, RTMR0, RTMR2, the composefs root digest and the TDVF hash, when it\nwas recorded and which hosts match it, plus the RIM and Intel Trust\nAuthority policy ids. Public, cached for a minute, no token needed.",
+        "operationId": "get_attestation_references_v1_attestation_references_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "APITokenResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "prefix": {
+            "type": "string",
+            "title": "Prefix",
+            "description": "First 8 chars for identification"
+          },
+          "scopes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Scopes"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "last_used_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Used At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "prefix",
+          "scopes",
+          "created_at"
+        ],
+        "title": "APITokenResponse"
+      },
+      "APITokenWithSecretResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "prefix": {
+            "type": "string",
+            "title": "Prefix",
+            "description": "First 8 chars for identification"
+          },
+          "scopes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Scopes"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "last_used_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Used At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "secret": {
+            "type": "string",
+            "title": "Secret",
+            "description": "Only returned once at creation. Store securely.",
+            "examples": [
+              "fgpu_live_abc123def456ghi789jkl012mno345pqr678stu901vwx234yz"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "prefix",
+          "scopes",
+          "created_at",
+          "secret"
+        ],
+        "title": "APITokenWithSecretResponse"
+      },
+      "AttachVolumeRequest": {
+        "properties": {
+          "instance_id": {
+            "type": "string",
+            "title": "Instance Id"
+          },
+          "mount_point": {
+            "type": "string",
+            "title": "Mount Point",
+            "default": "/mnt/data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "instance_id"
+        ],
+        "title": "AttachVolumeRequest"
+      },
+      "AvailabilityRegion": {
+        "properties": {
+          "region": {
+            "type": "string",
+            "title": "Region"
+          },
+          "available_count": {
+            "type": "integer",
+            "title": "Available Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "region",
+          "available_count"
+        ],
+        "title": "AvailabilityRegion"
+      },
+      "BalanceResponse": {
+        "properties": {
+          "amount_cents": {
+            "type": "integer",
+            "title": "Amount Cents"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "usd"
+          },
+          "billing_enabled": {
+            "type": "boolean",
+            "title": "Billing Enabled",
+            "description": "False until a credits ledger exists; amount_cents is then 0, not a balance",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "amount_cents"
+        ],
+        "title": "BalanceResponse"
+      },
+      "CloneVolumeRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "CloneVolumeRequest"
+      },
+      "CreateFilesystemRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "size_gb": {
+            "type": "integer",
+            "maximum": 500000.0,
+            "minimum": 100.0,
+            "title": "Size Gb"
+          },
+          "region": {
+            "type": "string",
+            "title": "Region"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "size_gb",
+          "region"
+        ],
+        "title": "CreateFilesystemRequest"
+      },
+      "CreateInstanceRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 63,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "hostname": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 63
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hostname"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "instance_type": {
+            "type": "string",
+            "title": "Instance Type"
+          },
+          "region": {
+            "type": "string",
+            "title": "Region"
+          },
+          "image": {
+            "type": "string",
+            "title": "Image"
+          },
+          "ssh_key_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Ssh Key Ids"
+          },
+          "startup_script_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Startup Script Id"
+          },
+          "cloud_init": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 65536
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cloud Init"
+          },
+          "startup_script": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 16384
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Startup Script"
+          },
+          "os_volume": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OsVolumeRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "volumes": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/VolumeRequest"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volumes"
+          },
+          "existing_volumes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Existing Volumes"
+          },
+          "is_spot": {
+            "type": "boolean",
+            "title": "Is Spot",
+            "default": false
+          },
+          "contract": {
+            "type": "string",
+            "pattern": "^(on_demand|spot|reserved)$",
+            "title": "Contract",
+            "default": "on_demand"
+          },
+          "cc_mode": {
+            "type": "boolean",
+            "title": "Cc Mode",
+            "default": false
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "instance_type",
+          "region",
+          "image",
+          "ssh_key_ids"
+        ],
+        "title": "CreateInstanceRequest"
+      },
+      "CreateSSHKeyRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "public_key": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Public Key"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "public_key"
+        ],
+        "title": "CreateSSHKeyRequest"
+      },
+      "CreateStartupScriptRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name",
+            "examples": [
+              "install-nccl-tests"
+            ]
+          },
+          "script": {
+            "type": "string",
+            "maxLength": 65536,
+            "minLength": 1,
+            "title": "Script"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "script"
+        ],
+        "title": "CreateStartupScriptRequest"
+      },
+      "CreateTokenRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name",
+            "examples": [
+              "shadeform-integration"
+            ]
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "scopes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Scopes",
+            "description": "Empty list = full access",
+            "examples": [
+              [
+                "instances:read",
+                "instances:write",
+                "usage:read"
+              ]
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "CreateTokenRequest"
+      },
+      "CreateVolumeRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "size_gb": {
+            "type": "integer",
+            "maximum": 100000.0,
+            "minimum": 10.0,
+            "title": "Size Gb"
+          },
+          "region": {
+            "type": "string",
+            "title": "Region"
+          },
+          "type": {
+            "type": "string",
+            "pattern": "^(nvme-persistent|ssd-persistent)$",
+            "title": "Type",
+            "default": "nvme-persistent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "size_gb",
+          "region"
+        ],
+        "title": "CreateVolumeRequest"
+      },
+      "CreateWebhookRequest": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "maxLength": 2048,
+            "minLength": 1,
+            "title": "Url"
+          },
+          "events": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Events"
+          },
+          "secret": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Secret",
+            "description": "Shared secret for HMAC-SHA256 verification"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url",
+          "events"
+        ],
+        "title": "CreateWebhookRequest"
+      },
+      "FilesystemListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/FilesystemResponse"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "pagination": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pagination"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "FilesystemListResponse"
+      },
+      "FilesystemResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "size_gb": {
+            "type": "integer",
+            "title": "Size Gb"
+          },
+          "region": {
+            "type": "string",
+            "title": "Region"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "nfs_endpoint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nfs Endpoint"
+          },
+          "nfs_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nfs Path"
+          },
+          "mount_command": {
+            "type": "string",
+            "title": "Mount Command"
+          },
+          "attached_instances": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Attached Instances"
+          },
+          "hourly_price_cents": {
+            "type": "integer",
+            "title": "Hourly Price Cents"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "size_gb",
+          "region",
+          "status",
+          "mount_command",
+          "attached_instances",
+          "hourly_price_cents",
+          "created_at"
+        ],
+        "title": "FilesystemResponse"
+      },
+      "GpuInfo": {
+        "properties": {
+          "index": {
+            "type": "integer",
+            "title": "Index"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "serial": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Serial"
+          },
+          "pci_address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pci Address"
+          },
+          "temperature_c": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature C"
+          },
+          "power_draw_w": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Power Draw W"
+          },
+          "health": {
+            "type": "string",
+            "title": "Health",
+            "default": "healthy"
+          }
+        },
+        "type": "object",
+        "required": [
+          "index"
+        ],
+        "title": "GpuInfo"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HostListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/HostResponse"
+            },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "HostListResponse"
+      },
+      "HostResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "hostname": {
+            "type": "string",
+            "title": "Hostname"
+          },
+          "api_url": {
+            "type": "string",
+            "title": "Api Url"
+          },
+          "region": {
+            "type": "string",
+            "title": "Region"
+          },
+          "gpu_model": {
+            "type": "string",
+            "title": "Gpu Model"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "net_mode": {
+            "type": "string",
+            "title": "Net Mode"
+          },
+          "sev_capable": {
+            "type": "boolean",
+            "title": "Sev Capable"
+          },
+          "tdx_capable": {
+            "type": "boolean",
+            "title": "Tdx Capable",
+            "default": false
+          },
+          "tdx_memory_gb": {
+            "type": "integer",
+            "title": "Tdx Memory Gb",
+            "default": 0
+          },
+          "tdx_memory_reserved_gb": {
+            "type": "integer",
+            "title": "Tdx Memory Reserved Gb",
+            "default": 0
+          },
+          "tdx_keyids_total": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tdx Keyids Total"
+          },
+          "tdx_keyids_reserved": {
+            "type": "integer",
+            "title": "Tdx Keyids Reserved",
+            "default": 0
+          },
+          "tdx_keyids_other": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tdx Keyids Other"
+          },
+          "total_gpus": {
+            "type": "integer",
+            "title": "Total Gpus"
+          },
+          "gpus_reserved": {
+            "type": "integer",
+            "title": "Gpus Reserved"
+          },
+          "gpus_free": {
+            "type": "integer",
+            "title": "Gpus Free"
+          },
+          "healthy": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Healthy"
+          },
+          "stale": {
+            "type": "boolean",
+            "title": "Stale"
+          },
+          "gpus_total_live": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gpus Total Live"
+          },
+          "gpus_available_live": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gpus Available Live"
+          },
+          "last_seen_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Seen At"
+          },
+          "last_checked_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Checked At"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "hostname",
+          "api_url",
+          "region",
+          "gpu_model",
+          "status",
+          "net_mode",
+          "sev_capable",
+          "total_gpus",
+          "gpus_reserved",
+          "gpus_free",
+          "healthy",
+          "stale"
+        ],
+        "title": "HostResponse"
+      },
+      "ImageListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ImageResponse"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "pagination": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pagination"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ImageListResponse"
+      },
+      "ImageResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "os": {
+            "type": "string",
+            "title": "Os"
+          },
+          "os_version": {
+            "type": "string",
+            "title": "Os Version"
+          },
+          "cuda_version": {
+            "type": "string",
+            "title": "Cuda Version"
+          },
+          "driver_version": {
+            "type": "string",
+            "title": "Driver Version"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "default": {
+            "type": "boolean",
+            "title": "Default"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "os",
+          "os_version",
+          "cuda_version",
+          "driver_version",
+          "description",
+          "default"
+        ],
+        "title": "ImageResponse"
+      },
+      "InstanceActionRequest": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "pattern": "^(start|stop|restart|hard_reset)$",
+            "title": "Action"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "title": "InstanceActionRequest"
+      },
+      "InstanceAvailabilityCheckResponse": {
+        "properties": {
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "regions": {
+            "items": {
+              "$ref": "#/components/schemas/AvailabilityRegion"
+            },
+            "type": "array",
+            "title": "Regions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "available",
+          "regions"
+        ],
+        "title": "InstanceAvailabilityCheckResponse",
+        "description": "Response for checking a specific instance type."
+      },
+      "InstanceAvailabilityEntry": {
+        "properties": {
+          "region": {
+            "type": "string",
+            "title": "Region"
+          },
+          "availabilities": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Availabilities"
+          }
+        },
+        "type": "object",
+        "required": [
+          "region",
+          "availabilities"
+        ],
+        "title": "InstanceAvailabilityEntry",
+        "description": "Per-region availability summary. Matches the spec's\n`InstanceAvailability` schema: one entry per region, with the list\nof instance type IDs that currently have capacity there."
+      },
+      "InstanceAvailabilityListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/InstanceAvailabilityEntry"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "pagination": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pagination"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "InstanceAvailabilityListResponse"
+      },
+      "InstanceListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/InstanceResponse"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "pagination": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pagination"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "InstanceListResponse"
+      },
+      "InstanceResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "hostname": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hostname"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "instance_type": {
+            "type": "string",
+            "title": "Instance Type"
+          },
+          "region": {
+            "type": "string",
+            "title": "Region"
+          },
+          "image": {
+            "type": "string",
+            "title": "Image"
+          },
+          "ip_addresses": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/IpAddresses"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "gpus": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/GpuInfo"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gpus"
+          },
+          "ssh_key_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ssh Key Ids"
+          },
+          "is_spot": {
+            "type": "boolean",
+            "title": "Is Spot",
+            "default": false
+          },
+          "contract": {
+            "type": "string",
+            "title": "Contract",
+            "default": "on_demand"
+          },
+          "cc_mode": {
+            "type": "boolean",
+            "title": "Cc Mode",
+            "default": false
+          },
+          "cc_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cc Type"
+          },
+          "host_node": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Host Node"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          },
+          "price_per_hour_cents": {
+            "type": "integer",
+            "title": "Price Per Hour Cents",
+            "default": 0
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "status",
+          "instance_type",
+          "region",
+          "image",
+          "ssh_key_ids",
+          "created_at"
+        ],
+        "title": "InstanceResponse"
+      },
+      "InstanceTypeListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/InstanceTypeResponse"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "pagination": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pagination"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "InstanceTypeListResponse"
+      },
+      "InstanceTypeRegion": {
+        "properties": {
+          "region": {
+            "type": "string",
+            "title": "Region"
+          },
+          "available_count": {
+            "type": "integer",
+            "title": "Available Count"
+          },
+          "spot_available": {
+            "type": "boolean",
+            "title": "Spot Available",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "region",
+          "available_count"
+        ],
+        "title": "InstanceTypeRegion",
+        "description": "Per-region availability for an instance type."
+      },
+      "InstanceTypeResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "gpu_type": {
+            "type": "string",
+            "title": "Gpu Type"
+          },
+          "gpu_count": {
+            "type": "integer",
+            "title": "Gpu Count"
+          },
+          "vram_per_gpu_gb": {
+            "type": "integer",
+            "title": "Vram Per Gpu Gb"
+          },
+          "vcpus": {
+            "type": "integer",
+            "title": "Vcpus"
+          },
+          "memory_gb": {
+            "type": "integer",
+            "title": "Memory Gb"
+          },
+          "local_storage_gb": {
+            "type": "integer",
+            "title": "Local Storage Gb"
+          },
+          "nvlink": {
+            "type": "boolean",
+            "title": "Nvlink"
+          },
+          "interconnect": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interconnect"
+          },
+          "hourly_price_cents": {
+            "type": "integer",
+            "title": "Hourly Price Cents",
+            "description": "On-demand list rate in USD cents"
+          },
+          "spot_price_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spot Price Cents",
+            "description": "Spot price in USD cents (null if spot not available)"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "usd"
+          },
+          "cc_capable": {
+            "type": "boolean",
+            "title": "Cc Capable",
+            "default": false
+          },
+          "cc_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cc Type"
+          },
+          "regions": {
+            "items": {
+              "$ref": "#/components/schemas/InstanceTypeRegion"
+            },
+            "type": "array",
+            "title": "Regions",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "gpu_type",
+          "gpu_count",
+          "vram_per_gpu_gb",
+          "vcpus",
+          "memory_gb",
+          "local_storage_gb",
+          "nvlink",
+          "hourly_price_cents"
+        ],
+        "title": "InstanceTypeResponse",
+        "description": "GPU instance type with specs, pricing, and regional availability."
+      },
+      "IpAddresses": {
+        "properties": {
+          "public_ipv4": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Public Ipv4"
+          },
+          "private_ipv4": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Private Ipv4"
+          },
+          "public_ipv6": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Public Ipv6"
+          }
+        },
+        "type": "object",
+        "title": "IpAddresses"
+      },
+      "OperationError": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "OperationError"
+      },
+      "OperationListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/OperationResponse"
+            },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "OperationListResponse"
+      },
+      "OperationResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "resource_id": {
+            "type": "string",
+            "title": "Resource Id"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OperationError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "status",
+          "resource_id",
+          "created_at"
+        ],
+        "title": "OperationResponse"
+      },
+      "OsVolumeRequest": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "size_gb": {
+            "type": "integer",
+            "minimum": 50.0,
+            "title": "Size Gb",
+            "default": 100
+          }
+        },
+        "type": "object",
+        "title": "OsVolumeRequest"
+      },
+      "QuotaLine": {
+        "properties": {
+          "limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit"
+          },
+          "used": {
+            "type": "integer",
+            "title": "Used"
+          }
+        },
+        "type": "object",
+        "required": [
+          "limit",
+          "used"
+        ],
+        "title": "QuotaLine"
+      },
+      "QuotasResponse": {
+        "properties": {
+          "tdx": {
+            "$ref": "#/components/schemas/TdxQuota"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tdx"
+        ],
+        "title": "QuotasResponse"
+      },
+      "RegionListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/RegionResponse"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "pagination": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pagination"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "RegionListResponse"
+      },
+      "RegionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "country": {
+            "type": "string",
+            "title": "Country"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "capabilities": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Capabilities"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "country",
+          "provider",
+          "status",
+          "capabilities"
+        ],
+        "title": "RegionResponse"
+      },
+      "ResizeFilesystemRequest": {
+        "properties": {
+          "size_gb": {
+            "type": "integer",
+            "minimum": 100.0,
+            "title": "Size Gb"
+          }
+        },
+        "type": "object",
+        "required": [
+          "size_gb"
+        ],
+        "title": "ResizeFilesystemRequest"
+      },
+      "ResizeVolumeRequest": {
+        "properties": {
+          "size_gb": {
+            "type": "integer",
+            "minimum": 10.0,
+            "title": "Size Gb"
+          }
+        },
+        "type": "object",
+        "required": [
+          "size_gb"
+        ],
+        "title": "ResizeVolumeRequest"
+      },
+      "SSHKeyListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/SSHKeyResponse"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "pagination": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pagination"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "SSHKeyListResponse"
+      },
+      "SSHKeyResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "public_key": {
+            "type": "string",
+            "title": "Public Key"
+          },
+          "fingerprint": {
+            "type": "string",
+            "title": "Fingerprint"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "public_key",
+          "fingerprint",
+          "created_at"
+        ],
+        "title": "SSHKeyResponse"
+      },
+      "StartupScriptListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/StartupScriptResponse"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "pagination": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pagination"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "StartupScriptListResponse"
+      },
+      "StartupScriptResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "script": {
+            "type": "string",
+            "title": "Script"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "script",
+          "created_at"
+        ],
+        "title": "StartupScriptResponse"
+      },
+      "TdxQuota": {
+        "properties": {
+          "instances": {
+            "$ref": "#/components/schemas/QuotaLine"
+          },
+          "memory_gb": {
+            "$ref": "#/components/schemas/QuotaLine"
+          }
+        },
+        "type": "object",
+        "required": [
+          "instances",
+          "memory_gb"
+        ],
+        "title": "TdxQuota"
+      },
+      "TokenListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/APITokenResponse"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "pagination": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pagination"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "TokenListResponse"
+      },
+      "UpdateInstanceRequest": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 63
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "title": "UpdateInstanceRequest"
+      },
+      "UsageLineItem": {
+        "properties": {
+          "instance_id": {
+            "type": "string",
+            "title": "Instance Id"
+          },
+          "instance_type": {
+            "type": "string",
+            "title": "Instance Type"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "region": {
+            "type": "string",
+            "title": "Region"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "stopped_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stopped At"
+          },
+          "runtime_hours": {
+            "type": "number",
+            "title": "Runtime Hours"
+          },
+          "gpu_hours": {
+            "type": "number",
+            "title": "Gpu Hours"
+          },
+          "hourly_rate_cents": {
+            "type": "integer",
+            "title": "Hourly Rate Cents"
+          },
+          "total_cost_cents": {
+            "type": "integer",
+            "title": "Total Cost Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "instance_id",
+          "instance_type",
+          "name",
+          "region",
+          "started_at",
+          "runtime_hours",
+          "gpu_hours",
+          "hourly_rate_cents",
+          "total_cost_cents"
+        ],
+        "title": "UsageLineItem"
+      },
+      "UsageSummaryResponse": {
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "title": "Account Id"
+          },
+          "period_start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Period Start"
+          },
+          "period_end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Period End"
+          },
+          "total_gpu_hours": {
+            "type": "number",
+            "title": "Total Gpu Hours"
+          },
+          "total_cost_cents": {
+            "type": "integer",
+            "title": "Total Cost Cents"
+          },
+          "line_items": {
+            "items": {
+              "$ref": "#/components/schemas/UsageLineItem"
+            },
+            "type": "array",
+            "title": "Line Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "account_id",
+          "period_start",
+          "period_end",
+          "total_gpu_hours",
+          "total_cost_cents",
+          "line_items"
+        ],
+        "title": "UsageSummaryResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VolumeListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/VolumeResponse"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "pagination": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pagination"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "VolumeListResponse"
+      },
+      "VolumeRequest": {
+        "properties": {
+          "size_gb": {
+            "type": "integer",
+            "minimum": 10.0,
+            "title": "Size Gb"
+          },
+          "type": {
+            "type": "string",
+            "pattern": "^(nvme-local|nvme-persistent|ssd-persistent)$",
+            "title": "Type",
+            "default": "nvme-local"
+          },
+          "mount_point": {
+            "type": "string",
+            "title": "Mount Point",
+            "default": "/data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "size_gb"
+        ],
+        "title": "VolumeRequest"
+      },
+      "VolumeResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "size_gb": {
+            "type": "integer",
+            "title": "Size Gb"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "region": {
+            "type": "string",
+            "title": "Region"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "attached_to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attached To"
+          },
+          "mount_point": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mount Point"
+          },
+          "host_node": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Host Node"
+          },
+          "device_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Name"
+          },
+          "device_index": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Index"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "deleted_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deleted At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "size_gb",
+          "type",
+          "region",
+          "status",
+          "created_at"
+        ],
+        "title": "VolumeResponse"
+      },
+      "WebhookListResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/WebhookResponse"
+            },
+            "type": "array",
+            "title": "Data"
+          },
+          "pagination": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pagination"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "WebhookListResponse"
+      },
+      "WebhookResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "events": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "last_delivery_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Delivery At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "url",
+          "events",
+          "status",
+          "created_at"
+        ],
+        "title": "WebhookResponse"
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "description": "API token: Authorization: Bearer fgpu_live_...",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Instances",
+      "description": "Create, list, control and terminate virtual machines and confidential trust domains."
+    },
+    {
+      "name": "Instance Types",
+      "description": "The catalogue of shapes you can launch, with their GPUs, vCPUs, memory and price."
+    },
+    {
+      "name": "Instance Availability",
+      "description": "Live capacity per instance type and region."
+    },
+    {
+      "name": "Regions",
+      "description": "Where instances can run."
+    },
+    {
+      "name": "Images",
+      "description": "Operating system images an instance can boot from."
+    },
+    {
+      "name": "Volumes",
+      "description": "Block volumes that attach to a running instance, with clone, resize and restore."
+    },
+    {
+      "name": "Filesystems",
+      "description": "Shared NFS filesystems with a hard quota, mounted from any of your instances."
+    },
+    {
+      "name": "SSH Keys",
+      "description": "Public keys installed on an instance at launch."
+    },
+    {
+      "name": "Startup Scripts",
+      "description": "Scripts run on first boot."
+    },
+    {
+      "name": "Operations",
+      "description": "The record of every asynchronous change. Poll one to follow a create, action or delete."
+    },
+    {
+      "name": "Webhooks",
+      "description": "Signed HTTP callbacks sent when an operation finishes."
+    },
+    {
+      "name": "Usage",
+      "description": "Metered usage and the account balance."
+    },
+    {
+      "name": "Quotas",
+      "description": "The limits on your account and how much of each is in use."
+    },
+    {
+      "name": "Attestation",
+      "description": "Reference values for verifying a confidential instance."
+    },
+    {
+      "name": "Auth",
+      "description": "API tokens and their scopes."
+    },
+    {
+      "name": "Health",
+      "description": "Service liveness."
+    }
+  ]
+}

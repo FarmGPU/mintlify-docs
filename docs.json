@@ -93,6 +93,156 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Cloud API",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "api-reference/introduction",
+              "api-reference/quickstart",
+              "api-reference/authentication",
+              "api-reference/operations-and-webhooks",
+              "api-reference/errors-and-limits"
+            ]
+          },
+          {
+            "group": "Endpoints",
+            "openapi": "api-reference/openapi.json",
+            "pages": [
+              {
+                "group": "Instances",
+                "pages": [
+                  "POST /v1/instances",
+                  "GET /v1/instances",
+                  "GET /v1/instances/{instance_id}",
+                  "PATCH /v1/instances/{instance_id}",
+                  "DELETE /v1/instances/{instance_id}",
+                  "POST /v1/instances/{instance_id}/actions",
+                  "GET /v1/instances/{instance_id}/console",
+                  "GET /v1/instances/{instance_id}/attestation",
+                  "GET /v1/instances/{instance_id}/usage"
+                ]
+              },
+              {
+                "group": "Instance Types",
+                "pages": [
+                  "GET /v1/instance-types"
+                ]
+              },
+              {
+                "group": "Instance Availability",
+                "pages": [
+                  "GET /v1/instance-availability",
+                  "GET /v1/instance-availability/{instance_type}"
+                ]
+              },
+              {
+                "group": "Regions",
+                "pages": [
+                  "GET /v1/regions"
+                ]
+              },
+              {
+                "group": "Images",
+                "pages": [
+                  "GET /v1/images"
+                ]
+              },
+              {
+                "group": "Volumes",
+                "pages": [
+                  "POST /v1/volumes",
+                  "GET /v1/volumes",
+                  "GET /v1/volumes/{volume_id}",
+                  "DELETE /v1/volumes/{volume_id}",
+                  "POST /v1/volumes/{volume_id}/restore",
+                  "POST /v1/volumes/{volume_id}/attach",
+                  "POST /v1/volumes/{volume_id}/detach",
+                  "POST /v1/volumes/{volume_id}/resize",
+                  "POST /v1/volumes/{volume_id}/clone"
+                ]
+              },
+              {
+                "group": "Filesystems",
+                "pages": [
+                  "POST /v1/filesystems",
+                  "GET /v1/filesystems",
+                  "GET /v1/filesystems/{filesystem_id}",
+                  "DELETE /v1/filesystems/{filesystem_id}",
+                  "POST /v1/filesystems/{filesystem_id}/resize"
+                ]
+              },
+              {
+                "group": "SSH Keys",
+                "pages": [
+                  "POST /v1/ssh-keys",
+                  "GET /v1/ssh-keys",
+                  "GET /v1/ssh-keys/{key_id}",
+                  "DELETE /v1/ssh-keys/{key_id}"
+                ]
+              },
+              {
+                "group": "Startup Scripts",
+                "pages": [
+                  "POST /v1/startup-scripts",
+                  "GET /v1/startup-scripts",
+                  "GET /v1/startup-scripts/{script_id}",
+                  "DELETE /v1/startup-scripts/{script_id}"
+                ]
+              },
+              {
+                "group": "Operations",
+                "pages": [
+                  "GET /v1/operations",
+                  "GET /v1/operations/{operation_id}"
+                ]
+              },
+              {
+                "group": "Webhooks",
+                "pages": [
+                  "POST /v1/webhooks",
+                  "GET /v1/webhooks",
+                  "DELETE /v1/webhooks/{webhook_id}"
+                ]
+              },
+              {
+                "group": "Usage",
+                "pages": [
+                  "GET /v1/usage",
+                  "GET /v1/balance"
+                ]
+              },
+              {
+                "group": "Quotas",
+                "pages": [
+                  "GET /v1/quotas"
+                ]
+              },
+              {
+                "group": "Attestation",
+                "pages": [
+                  "GET /v1/attestation/references"
+                ]
+              },
+              {
+                "group": "Auth",
+                "pages": [
+                  "POST /v1/auth/tokens",
+                  "GET /v1/auth/tokens",
+                  "DELETE /v1/auth/tokens/{token_id}"
+                ]
+              },
+              {
+                "group": "Health",
+                "pages": [
+                  "GET /health"
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -116,15 +266,15 @@
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "footer": {
     "socials": {

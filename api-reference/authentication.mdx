@@ -1,0 +1,52 @@
+---
+title: "Authentication"
+description: "Bearer tokens and scopes"
+icon: "key"
+---
+
+Every request except `GET /health` and `GET /v1/attestation/references` needs an API token in the `Authorization` header.
+
+```bash
+curl https://api.farmgpu.com/v1/instances \
+  -H "Authorization: Bearer $FARMGPU_TOKEN"
+```
+
+Tokens look like `fgpu_live_` followed by 64 hexadecimal characters. A token is shown once, when it is created; FarmGPU stores only a hash of it.
+
+## Create a token
+
+Use an existing token with the `admin:api_keys` scope, or the console under **Settings → API tokens**.
+
+```bash
+curl -X POST https://api.farmgpu.com/v1/auth/tokens \
+  -H "Authorization: Bearer $FARMGPU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "ci-deploy", "scopes": ["instances:read", "instances:write"]}'
+```
+
+A new token belongs to the same account as the token that created it, and cannot carry a scope its creator lacks. Set `expires_at` to make it expire.
+
+## Scopes
+
+| Scope | Allows |
+| --- | --- |
+| `instances:read` | List and read instances, availability, quotas, console and attestation |
+| `instances:write` | Create, update, start, stop, restart and terminate instances |
+| `volumes:read` | List and read volumes and filesystems |
+| `volumes:write` | Create, attach, detach, resize, clone and delete volumes and filesystems |
+| `keys:write` | Add and delete SSH keys |
+| `usage:read` | Read usage and balance |
+| `admin:api_keys` | Create, list and revoke tokens |
+
+A write scope includes its read scope. A token created with an empty `scopes` list has full access, so name the scopes you need.
+
+Regions, images, instance types, startup scripts, operations and webhooks need a valid token and no particular scope.
+
+## Revoke a token
+
+```bash
+curl -X DELETE https://api.farmgpu.com/v1/auth/tokens/tok_0123456789abcdef01234567 \
+  -H "Authorization: Bearer $FARMGPU_TOKEN"
+```
+
+A revoked token stops working immediately.

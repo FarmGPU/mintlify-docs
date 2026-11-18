@@ -1,0 +1,64 @@
+---
+title: "Errors and limits"
+description: "Error format, idempotency, rate limits and pagination"
+icon: "triangle-exclamation"
+---
+
+## Errors
+
+Errors use the [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) problem format. `type` identifies the error and is stable; `detail` is for people.
+
+```json
+{
+  "type": "https://api.farmgpu.com/errors/not-found",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "Instance i-0a1b2c3d4e5f not found"
+}
+```
+
+A `422` for an invalid body adds an `errors` list with one `field` and `message` per problem.
+
+| Status | Meaning |
+| --- | --- |
+| `400` | The request is malformed |
+| `401` | The token is missing, invalid, expired or revoked |
+| `402` | The organization has no credit left; add credit to launch or start instances |
+| `403` | The token lacks the scope, or the organization is suspended |
+| `404` | The resource does not exist in your account |
+| `409` | The resource is in the wrong state, capacity is exhausted, or a request with the same idempotency key is still running |
+| `422` | The body failed validation, or an idempotency key was reused with a different request |
+| `429` | Rate limit exceeded; wait for `Retry-After` seconds |
+| `501` | The feature is not available for this resource, such as a serial console on a confidential instance |
+| `502`, `503` | A host or a dependency is unavailable; retry |
+
+## Idempotency
+
+Send an `Idempotency-Key` header, up to 255 characters, on any request that creates or changes something. Retrying with the same key and the same body returns the first response instead of doing the work twice. Keys are kept for 24 hours.
+
+```bash
+curl -X POST https://api.farmgpu.com/v1/instances \
+  -H "Authorization: Bearer $FARMGPU_TOKEN" \
+  -H "Idempotency-Key: 7c1f0a52-2d0e-4c0b-9a55-3a1f4a0e9b11" \
+  -H "Content-Type: application/json" \
+  -d @instance.json
+```
+
+Reusing a key with a different request returns `422`. Sending it again while the first request is still running returns `409`.
+
+## Rate limits
+
+Each token may make 600 requests a minute, with bursts up to 1,200. Beyond that the API answers `429` with a `Retry-After` header.
+
+## Pagination
+
+List endpoints return a page of `data` and a `pagination` object.
+
+```json
+{
+  "data": [],
+  "pagination": { "next_cursor": "i-0a1b2c3d4e5f", "has_more": true, "total_count": 137 }
+}
+```
+
+Pass `limit` (1 to 100, default 25) and, for the next page, `cursor` set to the previous `next_cursor`. Stop when `has_more` is `false`.
